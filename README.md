@@ -125,3 +125,6 @@ gitignore 파일을 설정을 안해서 node_module이 통째로 올라갔는데
 
 - git revert <되돌릴 커밋>
   - 리드미에 작성된 내용같은 것들이 전부 날라갈 것 같으므로 그냥 진행
+- .next, front/node_module, package-lock.json 삭제 후 push 한다음 재설치 후 다시 push
+  - npm i
+  - 이번엔 gitignore 덕분에 node_module은 안올라 갈 듯
