@@ -91,6 +91,8 @@ vscode, nodejs, npm
 
 ### 1-4. Next.js 실행해보기
 
+<details>
+<summary>설치 및 실행(Hello world)</summary>
 front 폴더 생성
 
 front폴더에서 npm init
@@ -128,3 +130,39 @@ gitignore 파일을 설정을 안해서 node_module이 통째로 올라갔는데
 - .next, front/node_module, package-lock.json 삭제 후 push 한다음 재설치 후 다시 push
   - npm i
   - 이번엔 gitignore 덕분에 node_module은 안올라 갈 듯
+
+</details>
+
+- [ ] nextjs용 gitignore 파일 작성 방법 알아보기
+  - 현재 문의 중 구글에 gitignore nextjs로 검색하면 안나옴
+  - 일단 강좌의 ignore파일을 그대로 가져옴
+
+### 1-5. page와 레이아웃
+
+페이지들 만들고 인식을 못 하면 ctrl+c로 서버 껏다가 다시 시작(npm run dev)
+
+ㅁㅊ 라우터 설정 없이도 그냥 되네? pages폴더안에 만들어 놓기만 하면
+와 404 페이지도 자동으로 만들어져있네
+
+pages 폴더 안에 폴더를 만들면 그게 router 2차 경로임 존나 편함
+
+- [ ] React로 라우터 손수 지정한 것과 비교
+  - later
+
+pages/about/[name].js (동적 라우팅 기능 - 9버전에서 추가 됨)
+
+- 동적으로 최종경로의 이름을 바꾸고 싶을 때
+
+component들을 쪼갠 것은 components dir안에 파일추가 하면 됨
+
+- pages처럼 components라는 dir이름은 고정된 것은 아님
+
+npm i prop-types
+
+- typescript에선 필요없음
+
+각 페이지 별로 레이아웃을 다르게 적용하고 싶으면
+AppLayout 컴포넌트 말고도 OtherLayout같은 것을 만들어서
+원하는 페이지에 다른 레이아웃 컴포넌트로 감싸면 됨
+
+git파일이 front밖에 있기 때문에 node-bird로 나와서 commit, push 해줘야 됨
