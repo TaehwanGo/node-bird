@@ -133,9 +133,10 @@ gitignore 파일을 설정을 안해서 node_module이 통째로 올라갔는데
 
 </details>
 
-- [ ] nextjs용 gitignore 파일 작성 방법 알아보기
+- [x] nextjs용 gitignore 파일 작성 방법 알아보기
   - 현재 문의 중 구글에 gitignore nextjs로 검색하면 안나옴
   - 일단 강좌의 ignore파일을 그대로 가져옴
+  - .next node_modules .env 세 개 있으면 됨
 
 ### 1-5. page와 레이아웃
 
@@ -364,6 +365,96 @@ antd를 react와 연결하는 방법
 - 공통메뉴
 - Head태그안의 title
   - next에서 Head태그를 제공을 함
-  - [ ] React에선 헬멧?
+  - [x] React에선 헬멧
+    - React에선 react-helmet-async을 설치해서 변경한다.
+    - [x] react-helmet-async와 react-helmet 차이
+      - https://www.npmjs.com/package/react-helmet-async
+      - Provider를 사용하여 리액트 트리의 헬멧 상태를 캡슐화해야한다.
+      - 뭔가 개선된 것 같음 근데 Helmet.renderStatic(), .rewind()를 사용해보지 않아서 잘 모르겠음
+        - https://www.npmjs.com/package/react-helmet#server-usage
+        - 서버에서 사용하려면 prerender에서 사용할 헤드 데이터를 가져와야 됨
+        - react-helmet-asyncs는 그럴필요 없이 HelmetProvider로 감싸주면 되게 변경 됨
+        - 나중에 혹시 사용된 코드를 보면 이해가 될 듯
 
-next로 개발할 때 페이지 전환 시 느린 이유는 개발모드일 땐 빌드를 하나하나 해서 느리지만 배포모드일땐 미리 빌드를 해놓기 때문에 걱정안해도 됨
+<details>
+<summary>HelmetProvider의 사용 예</summary>
+
+```javascript
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { Helmet, HelmetProvider } from 'react-helmet-async';
+
+const app = (
+  <HelmetProvider>
+    <App>
+      <Helmet>
+        <title>Hello World</title>
+        <link rel="canonical" href="https://www.tacobell.com/" />
+      </Helmet>
+      <h1>Hello World</h1>
+    </App>
+  </HelmetProvider>
+);
+```
+
+</details>
+
+next로 개발할 때 페이지 전환 시 느린 이유는 개발모드일 땐 잠깐 빌드를 해서 느리지만 배포모드일땐 미리 빌드를 해놓기 때문에 걱정안해도 됨
+
+### 2-3. 반응형 그리드 사용하기
+
+<details>
+<summary>antd로 검색창 추가</summary>
+
+```javascript
+<Menu.Item>
+  <Input.Search enterButton style={{ verticalAlign: 'middle' }} />
+</Menu.Item>
+```
+
+- enterButton 같은 옵션을 줄 수 있음
+  - 공식문서에서 확인 가능 : 버튼을 파란색으로 만드는 것
+- style={{ verticalAlign: 'middle' }} 같이 CSS옵션을 직접 부여할 수 있음
+</details>
+
+반응형, 적응형
+
+- 적응형 : 모바일 페이지, 테블릿, 데스크탑 페이지 따로따로 만드는 것
+- 반응형 : 처음엔 모바일 페이지였다가 화면이 늘어남에 따라 컴포넌트들이 재배치 되면서 화면이 바뀜(모바일 -> 테블릿 -> 데스크탑)
+
+antd 반응형 그리드
+
+- import { Menu, Input, **Row, Col** } from 'antd';
+- 제로초 스타일
+  - 1. 가로로 먼저 나눈 뒤 세로로 나눔
+  - 2. 반응형을 할땐 모바일을 먼저 디자인을 해야 한다.(데스크탑 부터 하면 피곤 함)
+
+```javascript
+<Row gutter={8}>
+  <Col xs={24} md={6}>
+    왼쪽 메뉴
+  </Col>
+  <Col xs={24} md={12}>
+    {children}
+  </Col>
+  <Col xs={24} md={6}>
+    <a href="https://www.taehwango.info" target="_blank" rel="noreferrer">
+      Made by Tony
+    </a>
+  </Col>
+</Row>
+// 모바일에선 Col하나당 한칸씩 배치되서 3줄이던게
+// 데스크탑에선 6/24, 12/24, 6/24씩 가로로 한줄에 배치 됨
+```
+
+xs : 모바일
+sm : 태블릿
+md : 작은 데스크탑
+gutter : column간 간격
+
+antd는 화면세로줄(Col)이 24칸으로 나눠져 있음
+
+a태그의 rel="noreferrer noopener"
+
+- noreferrer : HTTP레퍼러 헤더를 넘기지 않을 수 있음(요청을 받는 쪽에서 해당 요청이 어디에서 왔는지 알 수 없음)
+- noopener : 열린쪽에서 window.opener 속성으로 연쪽의 window객체에 접근 할 수 있는 것을 방지함
