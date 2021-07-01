@@ -146,8 +146,47 @@ gitignore 파일을 설정을 안해서 node_module이 통째로 올라갔는데
 
 pages 폴더 안에 폴더를 만들면 그게 router 2차 경로임 존나 편함
 
-- [ ] React로 라우터 손수 지정한 것과 비교
-  - later
+- [x] React로 라우터 손수 지정한 것과 비교
+<details>
+<summary>세부내용</summary>
+
+next.js는 pages폴더 안에 만들면 자동으로 라우터 설정이 된다.
+
+react는 react-router-dom으로 부터 router를 import하고
+그 안에 한땀 한땀 넣어 줘야 한다.
+
+```javascript
+import React from 'react';
+import {
+  HashRouter as Router,
+  Route,
+  Redirect,
+  Switch,
+} from 'react-router-dom';
+import Home from '../Routes/Home';
+import TV from '../Routes/TV';
+import Header from './Header';
+import Search from '../Routes/Search';
+import Detail from '../Routes/Detail';
+
+export default () => (
+  <Router>
+    <>
+      <Header />
+      <Switch>
+        <Route path="/" exact component={Home} />
+        <Route path="/tv" component={TV} />
+        <Route path="/search" component={Search} />
+        <Route path="/movie/:id" component={Detail} />
+        <Route path="/show/:id" component={Detail} />
+        <Redirect from="*" to="/" />
+      </Switch>
+    </>
+  </Router>
+);
+```
+
+</details>
 
 pages/about/[name].js (동적 라우팅 기능 - 9버전에서 추가 됨)
 
@@ -166,3 +205,39 @@ AppLayout 컴포넌트 말고도 OtherLayout같은 것을 만들어서
 원하는 페이지에 다른 레이아웃 컴포넌트로 감싸면 됨
 
 git파일이 front밖에 있기 때문에 node-bird로 나와서 commit, push 해줘야 됨
+
+- 안그러면 front안에 있는 것만 업로드 됨
+
+### 1-6. Link와 eslint
+
+npm run dev로 실행할 때 package.json파일이 front에 있기 때문에 cd front해야 서버를 오픈할 수 있음
+
+Link태그
+
+- react의 Link 태그(react-router-dom으로 부터)는 next에선 next/link에서 가져옴
+
+```javascript
+<Link href="/">
+  <a>노드버드</a>
+</Link>
+```
+
+- href를 a태그가 아닌 Link태그에 적어야 함
+- [ ] 여기서 왜 a 태그를 안에 썻을까?
+
+eslint
+
+- 리액트 개발할 때 많이 쓰이는 코드 점검용 툴
+- npm i eslint -D
+  - -D:개발용으로만 쓰인다는 뜻
+- npm i eslint-plugin-import -D
+- npm i eslint-plugin-react -D
+- npm i eslint-plugin-react-hooks -D
+- 여러 사람이 코딩해도 한사람이 한 것 처럼 깔끔하게 보여짐
+  - 코드 룰을 정해줌
+
+.eslintrc
+
+- 확장자 없는 파일, linux에선 앞에 .이 붙으면 숨김 파일이 됨
+
+eslint 설치 후 빨간 불 없애기 위해 import React 등 추가 하고 propTypes의 오타도 수정함
