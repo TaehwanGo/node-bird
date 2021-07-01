@@ -223,7 +223,10 @@ Link태그
 ```
 
 - href를 a태그가 아닌 Link태그에 적어야 함
-- [ ] 여기서 왜 a 태그를 안에 썻을까?
+- [x] 여기서 왜 a 태그를 안에 썻을까?
+  - 안넣어도 상관이 없다, Link tag안에 children이 string일 경우 자동으로 a태그가 붙기 때문
+  - a태그를 넣으면 위 조건이 해당되지 않아서 그냥 넘어가게 된다.
+  - [참고 문헌](https://uchanlee.dev/nextjs/Why-using-a-tag-in-nextjs-Link/)
 
 eslint
 
@@ -241,3 +244,126 @@ eslint
 - 확장자 없는 파일, linux에선 앞에 .이 붙으면 숨김 파일이 됨
 
 eslint 설치 후 빨간 불 없애기 위해 import React 등 추가 하고 propTypes의 오타도 수정함
+
+### 1-7. Q&A
+
+<details>
+<summary>QnA 세부 내용</summary>
+
+material design vs ant design
+
+- 개인 선호도 차이
+- 제로초님은 부트스트랩도 사용하고 아무것도 사용하지 않은 CSS만으로도 개발함
+- 디자이너가 디자인시스템을 갖춰놨다면 쉽게 개발 가능
+
+dynamic routing
+
+- next 9버전 부터 편해짐(더 이상 커스텀 front-end 서버를 만들 필요가 없어짐)
+  - [ ] 커스텀 프론트 엔드 서버란?
+- dynamic routing, api routing 기능이 추가 됨
+  - [ ] 각각 뭔지 확인
+
+CORS는 신경안써도 되나요?
+
+- 신경써야됩니다.
+
+  - 브라우저 - 백엔드간 요청에 CORS 설정이 필요
+  - 백엔드서버와 프론트엔드 서버의 도메인이 다르기 때문에(포트만 달라도 CORS 걸림 - 백엔드 서버에서 CORS 설정 해야 함)
+  - 프론트에서도 쿠키보낸거 with credential 같은 거
+  - 브라우저와 프론트서버끼리는 CORS가 적용안되는데 프론트서버와 백엔드 서버 간엔 CORS 설정이 필요함
+  - node가 두개임(프론트, 백)
+    - 지금까지 나는 프론트를 github page나 netlify같은 곳에서만 사용했지만 실제론 서버를 임대해서 node 설치 후 프론트용 서버를 만들어줘야 되는 것 같다.
+      - 이 부분은 나중에 배포할때 다시 알아보자
+
+- [ ] CORS 관련 공부
+  - 백엔드에서 설정하는 것
+  - 프론트에서 쿠키 등에 주의해야 하는 것 등
+
+코드 스플리팅
+
+- CSR일 때 브라우저에서 프론트 서버로 갔다가 돌려주는데 그 때 모든화면을 다 담아서 돌려줌
+  - 비효율 적
+- js파일을 쪼개서 원하는 페이지만 불러오는 것
+  - 다른 페이지를 들어가면 그 페이지에 해당하는 부분을 프론트서버에서 받아옴
+  - 기존 CSR은 처음에만 프론트에서 받아오고 이후 백엔드와 통신을 하지만 코드스플릿팅을 한 앱의 경우엔 필요할때 마다 프론트서버에서 페이지를 받아오고 데이터는 백엔드에서 받아옴
+
+간단한 웹페이지에 리액트를 굳이 사용할 필요는 없음
+
+- 리액트를 사용하는 주된 목적은 고객 경험이다.
+- 리액트를 사용하면 웹사이트가 아니라 모바일같은 웹앱을 사용하는 고객경험을 줄 수 있음
+
+SSR을 할거냐 말거냐는 검색엔진에 나와야 되면 SSR을 해야되고
+아니면 리액트만으로도 된다.
+
+mongoDB는 굳이 쓸 필요가 없다. SQL쓰는게 더 낫다.
+
+- 웬만한 서버는 데이터들간 관계가 있음
+  - 상품과 성분 같이 N:N(다 대 다) 관계 등 또는 고객과 제품간의 1:N관계 같이 관계가 있으면 SQL쓰는게 정답임
+- mongoDB는 관계가 없거나 데이터가 지멋대로 들어올 때
+  - 로그 쌓을 때 : 여러가지 케이스들에 대처하기 위해
+    - 로그라는 테이블 안에 로그인, 구매날짜, 구매 내역 등
+
+Vue, React 둘다 하기보단 React를 먼저 깊게 파고 나중에 취직 후 Vue를 React 수준으로 끌어 올리는게 좋다.
+
+서버에서 각 페이지나 데이터를 캐싱할 수 있어서 굳이 매번 서버에서 렌더를 해서 주는게 아니라 서버에 갔다가 캐싱되어 있는 페이지를 주면 더 빠름
+
+</details>
+
+## 2. antd 사용해 SNS 화면 만들기
+
+백엔드 개발자가 데이터, API가 준비가 안된 상태라고 가정하고
+프론트엔드 개발자 입장에서 더미데이터로 대체해서 트위터랑 비슷하게 디자인
+
+### 2-1. antd와 styled-components
+
+antd
+
+- CSS 프레임워크
+- 버튼, 아이콘 등이 미리 만들어져 있음
+  - 단점 : 디자인이 획일화 됨
+    - 부트스트랩, 시멘틱UI, material UI 등
+    - 개성이 없어짐 -> 고객이 있는 서비스에선 잘 안씀
+
+React에 CSS를 사용하는 것은 여러가지 방법이 있다.
+
+- 그냥 css를 쓰는 것
+- SASS 또는 SCSS 등 CSS 전처리기를 사용하는 것
+- styled component
+- Emotion도 괜찮음(styled component와 거의 비슷)
+
+npm trends에서 검색하면 어떤 것이 대중적인지 확인 가능
+
+여기에선 antd와 styled-component를 사용
+
+- npm i antd styled-components @ant-design/icons
+
+실무에서도 admin page는 후순위로 밀리는데 antd나 bootstrap을 써도 됨
+
+메뉴창(AppLayout.js)에 적용 : 공식 문서 보면서 하면 됨, 외울 필요 없음
+
+### 2-2. \_app.js와 Head
+
+antd를 react와 연결하는 방법
+
+- 공식사이트의 Docs에서 설치방법을 봐야 함
+- next에 webpack이 들어 있는데 webpack이 CSS를 보면 스타일 태그로 바꿔서 HTML로 넣어줌
+
+  - import 'antd/dist/antd.css';
+    - 공통적으로 사용 되므로 pages폴더 안에 \_app.js
+      - index.js의 부모 컴포넌트임
+      - [x] \_app.js를 next는 자동으로 index보다 더 최상위 컴포넌트로 인식하는건가? 일단 돌아가는거 보면 그렇게 보이긴함
+        - 맞다. 제일 최상위에 \_document도 있다.
+          - https://geonlee.tistory.com/224
+
+- [x] PropTypes.elementType과 PropTypes.node 차이
+  - 거의 같은데 elementType은 React전용 인지 확인하는 것이고 node는 모든 node를 의미 함
+    - https://www.npmjs.com/package/prop-types
+
+\_app.js 안에는 공통적인 것들을 모두 적어주면 됨
+
+- 공통메뉴
+- Head태그안의 title
+  - next에서 Head태그를 제공을 함
+  - [ ] React에선 헬멧?
+
+next로 개발할 때 페이지 전환 시 느린 이유는 개발모드일 땐 빌드를 하나하나 해서 느리지만 배포모드일땐 미리 빌드를 해놓기 때문에 걱정안해도 됨
