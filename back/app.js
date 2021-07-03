@@ -1,15 +1,7 @@
 const express = require('express');
+const postRouter = require('./routes/post');
 
 const app = express();
-
-app.post('/api/post', (req, res) => {
-  //   res.json('작성 완료');
-  res.json({ id: 1, content: 'hello' });
-});
-
-app.delete('/api/post', (req, res) => {
-  res.json({ id: 1 });
-});
 
 app.get('/api/posts', (req, res) => {
   res.json([
@@ -26,6 +18,8 @@ app.get('/api', (req, res) => {
 app.get('/', (req, res) => {
   res.send('hello express');
 });
+
+app.use('/post', postRouter); // 중복된 요소를 뽑아 줄 수 있음
 
 app.listen(3065, () => {
   console.log('서버 실행 중');

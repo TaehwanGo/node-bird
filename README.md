@@ -628,3 +628,126 @@ REST API 방식으로 자주 사용하는 것
 Swagger : API문서를 뽑을 수 있음
 
 - [ ] 이번 프로젝트에 사용해보기
+
+### 4-3. 익스프레스 라우터 분리하기
+
+node는 import, export안쓰고 require를 씀
+
+- 노드는 웹팩을 안쓰기 때문 - 몇 년뒤엔 import, export로 통일 될 듯
+- [ ] babel, webpack 세팅 등 import, export 사용할 수 있게 세팅법 알아보기
+
+router의 분리
+
+```javascript
+// routes/post.js
+const express = require('express');
+
+const router = express.Router();
+router.post('/', (req, res) => {
+  // POST /post
+  res.json({ id: 1, content: 'hello' });
+});
+
+router.delete('/', (req, res) => {
+  // DELETE /post
+  res.json({ id: 1 });
+});
+
+module.exports = router;
+
+// app.js
+const postRouter = require('./routes/post');
+app.use('/post', postRouter);
+```
+
+### 4-4. MySQL과 시퀄라이즈 연결하기
+
+DB : MySQL 사용(무료라서)
+
+- mariaDB, postgreSQL 써도 됨
+
+MySQL 다운 및 설치
+
+- [node.js 교과서 참고](https://thebook.io/080229/)
+- MySQL installer for windows 용량 작은거 다운 후
+  - workbench와 server를 선택해서 다운로드 함
+    - workbench : DB GUI
+
+DB를 코드로 조작하기위 Orm 설치(sequelize)
+
+- npm i sequelize sequelize-cli mysql2
+  - mysql2 : 노드와 mysql을 연결시켜주는 드라이버
+
+ORM : Object Relational Mapping
+
+- 객체와 관계형 데이터베이스의 데이터를 자동으로 매핑(연결)해주는 것
+- javascript로 SQL을 조작할 수 있게 함
+- SQL이 자신있으면 ORM을 사용하지 않아도 됨(mysql2만 사용해도 됨)
+
+npx sequelize init
+
+- sequelize 세팅이 됨
+  - config, models, seeders, migrations 생성 됨
+    - config.json에 패스워드 입력(mysql 설치시 설정한)
+
+mysql root 비밀번호 바꾸기
+
+- 일단 mysql에 접속을 해야한다.
+  - 환경변수에 mysql이 설치된 경로를 입력함
+    - C:\Program Files\MySQL\MySQL Server 8.0\bin
+  - 환경변수를 등록을 해도 cli를 닫고 다시 실행해야 인식함
+- [mysql 접속](https://jintrue.tistory.com/entry/Windows-cmd-%EC%97%90%EC%84%9C-mysql-%EC%A0%91%EC%86%8D%ED%95%98%EA%B8%B0)
+- [비밀변호 변경](https://blog.itpaper.co.kr/mysql-password/)
+- 비밀번호를 변경한 이유는 config.json에 root password를 넣고 ORM을 실행하는데 내 비밀번호가 노출될 염려가 되기 때문에
+  - [ ] 나중에 .env 파일 같은 것을 이용해서 가릴 수 있을 것 같은데 일단은 이렇게 진행함
+
+config.js
+
+- "database": "react-nodebird" 로 전부 변경
+  - 보통은 test용, 개발용, 배포용 DB를 따로 둠
+  - port는 3306
+
+models > index.js
+
+```javascript
+const ob1 = { aa: { a: 1 }, bb: { b: 2 }, cc: { c: 3 } };
+ob1['aa']; // {a:1}
+```
+
+- object["key"] => key에 해당하는 value
+
+sequelize가 node랑 mysql을 연결
+
+- 내부적으로 mysql2를 사용(db 설정정보(pw 등)) -> node와 mysql을 연결 하도록 도와줌
+
+```javascript
+const sequelize = new Sequelize(
+  config.database,
+  config.username,
+  config.password,
+  config,
+);
+```
+
+- [ ] sequelize api 읽고 정리하기
+  - 선언 : new Sequelize()
+  - sequelize.define()
+
+### 4-5. 시퀄라이즈 모델 만들기
+
+MySQL의 Table == ORM의 model
+
+모델이름이 단수+대문자앞글자 -> MySQL에서 자동으로 소문자+복수
+
+- User -> users
+- 규칙임
+
+동시에 변수명 변경
+
+- 원하는 변수 클릭 후 ctrl + shift + L
+
+독립적인 데이터 테이블을 만들고 그 테이블간 관계를 파악해야 됨
+
+ORM column DataTypes
+
+- STRING, TEXT(긴글), INT, FLOAT, BOOLEAN, DATETIME, ...
