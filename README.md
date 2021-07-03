@@ -546,6 +546,15 @@ component에 props로 넘겨주는 함수(onChange 같은 것들)은 useCallback
 const http = require('http');
 const server = http.createServer((req, res) => {
   console.log(req.url, req.method);
+  if (req.method === 'GET') {
+    // 라우팅
+    if (req.url === '/api/posts') {
+    }
+  } else if (req.method === 'POST') {
+    if (req.url === '/api/posts') {
+    }
+  }
+  res.write('<h1>Hello node1</h1>');
   res.end('Hello node');
 });
 server.listen(3065, () => {
@@ -578,3 +587,44 @@ npm i express
 
 - express도 내부적으로 http를 사용해서 서버를 돌림
   - 노드에서 제공하는 http 모듈을 사용
+
+주소창에 치는 것은 get 요청
+api요청은 보통 json으로 응답함
+
+```javascript
+app.get('/api/posts', (req, res) => {
+  res.json([
+    { id: 1, content: 'hello' },
+    { id: 2, content: 'hello' },
+    { id: 3, content: 'hello' },
+  ]);
+});
+```
+
+post랑 delete같은 요청은?
+
+- 브라우저 주소창은 get요청임
+- 프론트에서 axios같은 걸로 보내거나
+- postman같은 툴이 필요함
+
+REST API 방식으로 자주 사용하는 것
+
+- app.get : (게시글 등) 가져오다.
+- app.post : 생성하다
+- app.put : 전체 수정(통채로 덮어씌우는 것, 잘 안쓰임)
+- app.patch : 부분 수정(닉네임만 수정)
+- app.delete : 제거
+- app.options : 찔러보기(서버야, 나 요청 보낼 수 있어?)
+- app.head : 헤더만 가져오기(헤더 / 바디 중에서 헤더만)
+  - 헤더 : 바디에 대한 정보들
+
+암묵적으로 정해진 약속 같은 것이지만 REST 를 꼭 지키지 않더라도
+프론트와 백이 서로 합의 하에 바꿀 수 있음
+
+로그인 요청은 ?
+게시글 가져오면서 조회수 1올릴 땐 ?
+=> 애매하면 post를 쓰면 됨
+
+Swagger : API문서를 뽑을 수 있음
+
+- [ ] 이번 프로젝트에 사용해보기
