@@ -1,8 +1,28 @@
 # React로 NodeBird SNS 만들기(2021 리뉴얼 강좌)
 
-## 1. Hello, Next.js
+## Things to do later
 
-### 1-1. 리뉴얼 강좌 소개
+- [x] antd에 dark mode 전환 있는지 알아보기
+  - https://ant.design/components/menu/ 를 보면서 dark mode를 넣는 도중 body 전체에 css를 적용하기 위해 document.querySelector로 body를 가져오려고 했으나 document is not defined 에러 발생
+    - next는 SSR로 동작하기 때문에 발생된 문제
+      - https://helloinyong.tistory.com/248
+      - 웹 페이지를 구성시킬 요소들이 렌더링 및 클라이언트로 로드 되기 전에 document에 접근해서 발생한 문제
+        - ComponentDidMount를 이용해서 해결했다고 나옴
+          - useEffect를 사용해서 해결함
+- [ ] global state로 페이지 전환해도 dark mode 유지하기
+  - react context
+    - useReducer() : 상태 업데이트 로직을 컴포넌트 밖에 작성할 수 있고, 다른파일에 작성 후 불러와서 사용 할 수 있음
+      - https://www.daleseo.com/react-hooks-use-reducer/
+      - const [state,dispatch] = useReducer(reducer, initialState);
+        - state : 컴포넌트에서 사용 할 수 있는 상태
+        - dispatch : 액션을 발생시키는 함수
+        - 첫번째 인자(reducer) : reducer 함수
+        - 두번째 인자(initialState) : 초기값
+  - redux
+
+## 0. Hello, Next.js
+
+### 0-1. 리뉴얼 강좌 소개
 
 <details>
 <summary>기존 강좌에 비해 바뀐 점</summary>
@@ -45,7 +65,7 @@
 SPA(CSR) 렌더링 방식 - ex) React, Vue, Angular
 ![전통적인CSR](images/CSR.PNG)
 
-### 1-2. Next.js 역할 소개
+### 0-2. Next.js 역할 소개
 
 SSR과 CSR의 장단점
 
@@ -85,11 +105,11 @@ next는 언제쓰고 언제 쓰지 말아야 할까?
      - [오픈소스 진행중](https://github.com/reactGo/reactGo)
        - 제로초님의 정부지원받아서 진행 중인 프로젝트
 
-### 1-3. 실전예제와 준비사항
+### 0-3. 실전예제와 준비사항
 
 vscode, nodejs, npm
 
-### 1-4. Next.js 실행해보기
+### 0-4. Next.js 실행해보기
 
 <details>
 <summary>설치 및 실행(Hello world)</summary>
@@ -138,7 +158,7 @@ gitignore 파일을 설정을 안해서 node_module이 통째로 올라갔는데
   - 일단 강좌의 ignore파일을 그대로 가져옴
   - .next node_modules .env 세 개 있으면 됨
 
-### 1-5. page와 레이아웃
+### 0-5. page와 레이아웃
 
 페이지들 만들고 인식을 못 하면 ctrl+c로 서버 껏다가 다시 시작(npm run dev)
 
@@ -209,7 +229,7 @@ git파일이 front밖에 있기 때문에 node-bird로 나와서 commit, push �
 
 - 안그러면 front안에 있는 것만 업로드 됨
 
-### 1-6. Link와 eslint
+### 0-6. Link와 eslint
 
 npm run dev로 실행할 때 package.json파일이 front에 있기 때문에 cd front해야 서버를 오픈할 수 있음
 
@@ -246,7 +266,7 @@ eslint
 
 eslint 설치 후 빨간 불 없애기 위해 import React 등 추가 하고 propTypes의 오타도 수정함
 
-### 1-7. Q&A
+### 0-7. Q&A
 
 <details>
 <summary>QnA 세부 내용</summary>
@@ -276,9 +296,33 @@ CORS는 신경안써도 되나요?
     - 지금까지 나는 프론트를 github page나 netlify같은 곳에서만 사용했지만 실제론 서버를 임대해서 node 설치 후 프론트용 서버를 만들어줘야 되는 것 같다.
       - 이 부분은 나중에 배포할때 다시 알아보자
 
-- [ ] CORS 관련 공부
-  - 백엔드에서 설정하는 것
-  - 프론트에서 쿠키 등에 주의해야 하는 것 등
+- [x] CORS 관련 공부
+
+<details>
+<summary>CORS details</summary>
+
+출처
+
+- https://youtu.be/bW31xiNB8Nc
+- https://velog.io/@jesop/SOP%EC%99%80-CORS
+
+SOP : Same-Origin Policy
+
+- 하나의 출처(Origin)에서 로드된 자원(문서나 스크립트)이 호스트나 프로토콜, 포트번호가 일치하지 않는 자원과 상호작용 하지 못 하도록 요청발생을 제한하고, 동일출처에서만 접근이 가능한 정책
+
+CORS : Cross-Origin Resource Sharing
+
+- 다른 출처의 리소스를 불러오려면 그 출처(백엔드쪽)에서 올바른 CORS헤더를 포함한 응답을 반환해야 한다.
+- 1. 서버에서 Access-Control-allow-origin 헤더 추가
+  - 브라우저가 확인 후 포함되어 있으면 안전한 요청으로 간주
+- 2. Proxy sever를 사용한다면 프록시 서버에서 Access-Control-allow-origin: \* 헤더를 담아서 응답
+- 3. webpack-dev-server proxy
+  - 프론트엔드에서 webpack-dev-server proxy 기능을 사용하면 서버쪽 코드를 수정하지 않고 해결 할 수 있음
+- 토큰 등 사용자 식별 정보가 담긴 요청에 대해선 더 엄격함
+  - 브라우저에 저장된 쿠키가 나쁘게 사용되지 않기 위함
+  - 보내는 측 : credentials 항목을 true로 세팅
+  - 받는 쪽 : 아무출처나 다 받는 와일드 카드가 아니라 보내는 쪽의 출처, 웹페이지 주소를 정확히 명시한 다음 Access-Control-Allow-Credentials 항목을 true로 맞춰줘야 함
+  </details>
 
 코드 스플리팅
 
@@ -310,12 +354,12 @@ Vue, React 둘다 하기보단 React를 먼저 깊게 파고 나중에 취직 �
 
 </details>
 
-## 2. antd 사용해 SNS 화면 만들기
+## 1. antd 사용해 SNS 화면 만들기
 
 백엔드 개발자가 데이터, API가 준비가 안된 상태라고 가정하고
 프론트엔드 개발자 입장에서 더미데이터로 대체해서 트위터랑 비슷하게 디자인
 
-### 2-1. antd와 styled-components
+### 1-1. antd와 styled-components
 
 antd
 
@@ -342,7 +386,7 @@ npm trends에서 검색하면 어떤 것이 대중적인지 확인 가능
 
 메뉴창(AppLayout.js)에 적용 : 공식 문서 보면서 하면 됨, 외울 필요 없음
 
-### 2-2. \_app.js와 Head
+### 1-2. \_app.js와 Head
 
 antd를 react와 연결하는 방법
 
@@ -401,7 +445,7 @@ const app = (
 
 next로 개발할 때 페이지 전환 시 느린 이유는 개발모드일 땐 잠깐 빌드를 해서 느리지만 배포모드일땐 미리 빌드를 해놓기 때문에 걱정안해도 됨
 
-### 2-3. 반응형 그리드 사용하기
+### 1-3. 반응형 그리드 사용하기
 
 <details>
 <summary>antd로 검색창 추가</summary>
@@ -458,3 +502,33 @@ a태그의 rel="noreferrer noopener"
 
 - noreferrer : HTTP레퍼러 헤더를 넘기지 않을 수 있음(요청을 받는 쪽에서 해당 요청이 어디에서 왔는지 알 수 없음)
 - noopener : 열린쪽에서 window.opener 속성으로 연쪽의 window객체에 접근 할 수 있는 것을 방지함
+
+### 1-4. 로그인 폼 만들기
+
+서버 없이 로그인 : 더미데이터 사용
+상태를 저장 : state
+
+```javascript
+const [isLoggedIn, setIsLoggedIn] = useState(false);
+```
+
+component
+
+- 화면 보여주는 애들
+
+container
+
+- 데이터 가져오는 애들(data를 가져오거나 다루는 component)
+- hooks 이후 container와 component를 구분하지 않는 추세임
+
+코딩하다가 나는 에러들을 블로그로 정리하는 것도 좋음
+
+Form을 수작업으로 만들어도 되지만 Form관련 라이브러리를 쓰면 편함
+
+- [ ] label 태그 알아보기
+
+component에 props로 넘겨주는 함수(onChange 같은 것들)은 useCallback()을 사용하자 그래야 최적화가 된다.
+
+- [ ] useCallback 이란?
+
+반복 되는 함수는들은 custom hook으로 처리 할 수 있음
