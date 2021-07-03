@@ -532,3 +532,49 @@ component에 props로 넘겨주는 함수(onChange 같은 것들)은 useCallback
 - [ ] useCallback 이란?
 
 반복 되는 함수는들은 custom hook으로 처리 할 수 있음
+
+## 4. 백엔드 노드 서버 구축하기
+
+### 4-1. 노드로 서버 구동하기
+
+<details>
+<summary>node 서버 기본</summary>
+
+- 노드는 서버가 아님
+
+```javascript
+const http = require('http');
+const server = http.createServer((req, res) => {
+  console.log(req.url, req.method);
+  res.end('Hello node');
+});
+server.listen(3065, () => {
+  console.log('서버 실행 중');
+});
+```
+
+http가 서버 역할을 할 순 있음(라이브러리 설치없이) 그러나 http가 서버 역할을 하는 것이지 노드 자체가 서버는 아님
+
+- Node.js®는 Chrome의 V8 JavaScript 엔진에 구축 된 JavaScript 런타임입니다.
+
+back dir로 이동해서 **npm init**
+
+프론트 서버와 백엔드 서버를 나누는 이유
+
+- 대규모 앱이 되었을 때를 대비하기 위해서
+- 스케일링 : 서버를 늘려서 부하량을 늘림(만약 분리가 안되어 있다면 불필요하게 다른쪽도 같이 복사해야 됨)
+
+**node app.js** 로 실행
+
+서버 : 요청에 대한 응답을 해준다.
+
+- 요청 한번당 응답 한번, res.end를 두번사용하면 안됨
+
+</details>
+
+### 4-2. 익스프레스로 라우팅 하기
+
+npm i express
+
+- express도 내부적으로 http를 사용해서 서버를 돌림
+  - 노드에서 제공하는 http 모듈을 사용
