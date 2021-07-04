@@ -751,3 +751,141 @@ MySQL의 Table == ORM의 model
 ORM column DataTypes
 
 - STRING, TEXT(긴글), INT, FLOAT, BOOLEAN, DATETIME, ...
+
+### 4-6. 시퀄라이즈 관계 설정하기
+
+관계를 잘 파악하는게 중요
+
+- 사용자가 게시글을 작성한다.
+  - 사용자 한명이 게시글을 여러개 작성가능
+  - 게시글 하나에 작성자가 여러명일 수 있나?(지금 만드는 서비스에선 안됨)
+  - User : Post = 1 : N
+  - 1:N = hasMany() : belongTo()
+
+```javascript
+// user.js
+User.associate = db => {
+  db.User.hasMany(db.Post); // 유저는 많은 게시물을 가질 수 있음
+};
+
+// post.js
+Post.associate = db => {
+  db.Post.belongsTo(db.User); // 작성자에 속해 있음
+};
+
+// comment.js
+Comment.associate = db => {
+  db.Comment.belongsTo(db.User);
+  db.Comment.belongsTo(db.Post);
+};
+```
+
+belongsTo의 역할
+UserId: {}
+PostId: {}
+라는 column들이 자동으로 생김
+sql : 한칸에 하나의 정보가 들어가게 테이블과 관계를 설정해야 함
+
+hash tag와 post의 관계
+
+- N : N
+- 둘다 belongsToMany로 연결 됨
+
+```javascript
+// post.js
+Post.associate = db => {
+  db.Post.belongsTo(db.User);
+  db.Post.hasMany(db.Comment);
+  db.Post.hasMany(db.Image);
+  db.Post.belongsToMany(db.Hashtag);
+};
+// hashtag.js
+Hashtag.associate = db => {
+  db.Hashtag.belongsToMany(db.Post);
+};
+```
+
+N : N 테이블
+![ManyToManyImg](images/NNrelationship.PNG)
+
+- 중간에 N:N을 연결해주는 테이블이 하나 더 생김
+
+만약 1:1 관계라면?
+
+- 사용자 : 사용자 정보
+- hasOne() : belongsTo()
+- 누구를 belongsTo로 두어야 하는가?
+  - belongsTo로 들어가는 애가 자동으로 column이 생김
+  - 어느쪽이든 상관없는데 찾을 때 주의해서 찾으면 될 것 같다.
+
+사용자의 좋아요 vs 게시글
+
+- N : N 관계
+
+```javascript
+Post.associate = db => {
+  db.Post.belongsTo(db.User); // post의 작성자
+  db.Post.belongsToMany(db.User, { through: 'Like', as: 'Likers' }); // post에 좋아요를 누른 사람
+};
+
+User.associate = db => {
+  db.User.hasMany(db.Post); // 작성한 게시글들
+  db.User.belongsToMany(db.Post, { through: 'Like', as: 'Liked' }); // 좋아요를 누른 게시글들
+};
+```
+
+- 중간 테이블의 이름은 정해줄 수 있음 -> { through: 'Like' }
+- 이름을 바꾸지 않으면 UserPost라고 생기는데 이것만 봐선 좋아요인지 모르기 때문
+- as : 'Likers'로 기존의 User : Post = 1 : N 관계이름을 구분지을 수 있음
+  - 나중에 as에 따라서 post.getLikers처럼 게시글 좋아요 누른 사람을 가져옴
+
+같은 테이블간 관계(팔로잉 - 팔로워 = N : N)
+![NNinSameTable](images/NNinSameTable.PNG)
+
+- 다 대 다 관계일 땐 항상 중간 테이블이 생긴다.
+
+```javascript
+db.User.belongsToMany(db.User, {
+  through: 'Follow',
+  as: 'Followers',
+  foreignKey: 'FollowingId',
+});
+db.User.belongsToMany(db.User, {
+  through: 'Follow',
+  as: 'Followings',
+  foreignKey: 'FollowerId',
+});
+```
+
+- foreignKey
+
+  - 테이블이 다른 N : N은 id를 구분할때 테이블+id로 어느쪽인지 구분이 되지만
+  - 같은 테이블에선 UserId UserId만으론 follower인지 following인지 구분이 안되므로 foreignKey를 사용해서 어느쪽인지 구분 할 수 있게 함
+
+- through : 중간 테이블 명 변경
+
+리트윗 관계(1 : N)
+![retweetTable](images/retweetTable.PNG)
+
+- 한 게시글을 여러번 리트윗 할 수 있으므로
+
+- [ ] 테이블 간 정규화가 뭔지 알아보기
+  - 상황에 따라 달라지는 역정규화도 알아보기
+
+관계 원칙
+
+- 독립적으로 테이블을 여러개 두고
+- 그 테이블 간 관계가 있는지 파악
+
+### 4-7. 시퀄라이즈 sync + nodemon
+
+1. 모델 만들기 + 관계 설정(4-6)
+2. sequelize에 모델등록
+
+```javascript
+db.Comment = require('./comment')(sequelize, sequelize); // require 한 다음 함수(comment)를 실행
+db.Hashtag = require('./hashtag')(sequelize, sequelize);
+db.Image = require('./image')(sequelize, sequelize);
+db.post = require('./post')(sequelize, sequelize);
+db.User = require('./user')(sequelize, sequelize);
+```

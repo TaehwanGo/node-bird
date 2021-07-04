@@ -36,11 +36,18 @@ const sequelize = new Sequelize(
   config,
 );
 
+// 빈 obj (db)에 obj.key = value 하면 새로운 키와 밸류가 obj에 등록 됨
+db.Comment = require('./comment')(sequelize, sequelize); // require 한 다음 함수(comment)를 실행
+db.Hashtag = require('./hashtag')(sequelize, sequelize);
+db.Image = require('./image')(sequelize, sequelize);
+db.post = require('./post')(sequelize, sequelize);
+db.User = require('./user')(sequelize, sequelize);
+
 Object.keys(db).forEach(modelName => {
   if (db[modelName].associate) {
     db[modelName].associate(db);
   }
-});
+}); // 관계를 설정했던 associate부분을 실행하는 것
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;

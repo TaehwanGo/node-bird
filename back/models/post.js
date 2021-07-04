@@ -14,6 +14,13 @@ module.exports = (sequelize, DataTypes) => {
       collate: 'utf8mb4_general_ci', // 한글저장을 위한 설정
     },
   );
-  Post.associate = db => {};
+  Post.associate = db => {
+    db.Post.belongsTo(db.User); // post의 작성자
+    db.Post.hasMany(db.Comment);
+    db.Post.hasMany(db.Image);
+    db.Post.belongsToMany(db.Hashtag);
+    db.Post.belongsToMany(db.User, { through: 'Like', as: 'Likers' }); // post에 좋아요를 누른 사람
+    db.Post.belongsTo(db.Post, { as: 'Retweet' }); // retweet - belongsTo는 PostId를 만드는데 이러면 햇갈리므로 retweetId로 변경
+  };
   return Post;
 };

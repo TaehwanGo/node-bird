@@ -14,6 +14,8 @@ module.exports = (sequelize, DataTypes) => {
       collate: 'utf8mb4_general_ci', // 한글저장을 위한 설정
     },
   );
-  Hashtag.associate = db => {};
+  Hashtag.associate = db => {
+    db.Hashtag.belongsToMany(db.Post);
+  };
   return Hashtag;
 };
