@@ -883,9 +883,91 @@ db.User.belongsToMany(db.User, {
 2. sequelize에 모델등록
 
 ```javascript
-db.Comment = require('./comment')(sequelize, sequelize); // require 한 다음 함수(comment)를 실행
-db.Hashtag = require('./hashtag')(sequelize, sequelize);
-db.Image = require('./image')(sequelize, sequelize);
-db.post = require('./post')(sequelize, sequelize);
-db.User = require('./user')(sequelize, sequelize);
+db.Comment = require('./comment')(sequelize, Sequelize); // require 한 다음 함수(comment)를 실행
+db.Hashtag = require('./hashtag')(sequelize, Sequelize);
+db.Image = require('./image')(sequelize, Sequelize);
+db.post = require('./post')(sequelize, Sequelize);
+db.User = require('./user')(sequelize, Sequelize);
 ```
+
+3. express에 sequelize를 등록
+
+```javascript
+// app.js - 서버 실행할 때 db연결도 같이 됨
+db.sequelize
+  .sync() // Promise
+  .then(() => {
+    console.log('db 연결 성공');
+  })
+  .catch(console.error);
+```
+
+node app 으로 실행되는지 확인
+
+<details>
+<summary>버그 픽스</summary>
+
+- Unknown database 'react-nodebird' 가 나와야 되는데
+
+```
+C:\github\node-bird\back\node_modules\sequelize\lib\associations\belongs-to-many.js:63
+      throw new AssociationError(`${source.name}.belongsToMany(${target.name}) requires through option, pass either a string or a model`);
+      ^
+
+AssociationError [SequelizeAssociationError]: Hashtag.belongsToMany(Post) requires through option, pass either a string or a model
+    at new BelongsToMany (C:\github\node-bird\back\node_modules\sequelize\lib\associations\belongs-to-many.js:63:13)
+    at Function.belongsToMany (C:\github\node-bird\back\node_modules\sequelize\lib\associations\mixin.js:64:25)
+    at Function.Hashtag.associate (C:\github\node-bird\back\models\hashtag.js:18:16)
+    at C:\github\node-bird\back\models\index.js:48:19
+    at Array.forEach (<anonymous>)
+    at Object.<anonymous> (C:\github\node-bird\back\models\index.js:46:17)
+    at Module._compile (internal/modules/cjs/loader.js:1138:30)
+    at Object.Module._extensions..js (internal/modules/cjs/loader.js:1158:10)
+    at Module.load (internal/modules/cjs/loader.js:986:32)
+    at Function.Module._load (internal/modules/cjs/loader.js:879:14)
+```
+
+위 에러 발생
+
+```javascript
+// hashtag.js
+Hashtag.associate = db => {
+  db.Hashtag.belongsToMany(db.Post, { through: 'PostHashtag' });
+};
+// post.js
+Post.associate = db => {
+  db.Post.belongsTo(db.User); // post의 작성자
+  db.Post.hasMany(db.Comment);
+  db.Post.hasMany(db.Image);
+  db.Post.belongsToMany(db.Hashtag, { through: 'PostHashtag' });
+  db.Post.belongsToMany(db.User, { through: 'Like', as: 'Likers' }); // post에 좋아요를 누른 사람
+  db.Post.belongsTo(db.Post, { as: 'Retweet' }); // retweet - belongsTo는 PostId를 만드는데 이러면 햇갈리므로 retweetId로 변경
+};
+
+// hashtag와 post에 각각 에러에서 through 옵션을 추가하라고 했으므로 추가 함
+```
+
+</details>
+
+- Unknown database 'react-nodebird'
+  - npx sequelize db:create
+
+```
+Sequelize CLI [Node: 12.18.0, CLI: 6.2.0, ORM: 6.6.4]
+
+Loaded configuration file "config\config.json".
+Using environment "development".
+Database react-nodebird created.
+```
+
+node app
+
+- Terminal 창에 SQL문 + console메세지(db연결성공) 확인
+- WorkBench - localhost - Schema - Table에서 확인
+
+- ERD : 모델들의 관계를 도식화 해놓은 것
+
+npm i -D nodemon
+
+- 실행할때 node app 대신 nodemon app 이라고 치면 됨
+- 저장할때마다 서버를 재시작 시켜줌

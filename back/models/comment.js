@@ -2,10 +2,8 @@ module.exports = (sequelize, DataTypes) => {
   const Comment = sequelize.define(
     'Comment',
     {
-      // 모델이름이 MySQL엔 users로 소문자+복수로 저장됨
-      // id가 기본적으로 들어있음(MySQL에서 순차적으로 자동으로 생성됨)
       content: {
-        type: DataTypes.TEXT,
+        type: DataTypes.STRING(500),
         allowNull: false,
       },
     },

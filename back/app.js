@@ -1,7 +1,16 @@
 const express = require('express');
 const postRouter = require('./routes/post');
+const db = require('./models'); // dir를 가져오면 자동으로 그 안의 index를 찾아서 가져옴
 
 const app = express();
+
+// sequelize.sync() : promise
+db.sequelize
+  .sync()
+  .then(() => {
+    console.log('db 연결 성공');
+  })
+  .catch(console.error);
 
 app.get('/api/posts', (req, res) => {
   res.json([
