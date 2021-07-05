@@ -10,6 +10,7 @@
         - ComponentDidMount를 이용해서 해결했다고 나옴
           - useEffect를 사용해서 해결함
 - [ ] global state로 페이지 전환해도 dark mode 유지하기
+
   - react context
     - useReducer() : 상태 업데이트 로직을 컴포넌트 밖에 작성할 수 있고, 다른파일에 작성 후 불러와서 사용 할 수 있음
       - https://www.daleseo.com/react-hooks-use-reducer/
@@ -19,6 +20,9 @@
         - 첫번째 인자(reducer) : reducer 함수
         - 두번째 인자(initialState) : 초기값
   - redux
+
+- github pull request test
+  - fork한 것을 clone 후 수정해서 push하면 자동으로 request가 가는건가?
 
 ## 0. Hello, Next.js
 
