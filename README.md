@@ -21,8 +21,8 @@
         - 두번째 인자(initialState) : 초기값
   - redux
 
-- github pull request test
-  - fork한 것을 clone 후 수정해서 push하면 자동으로 request가 가는건가?
+- [x] github pull request 내용 정리
+  - [블로그에 정리](https://velog.io/@gth1123/github%EC%9C%BC%EB%A1%9C-%ED%98%91%EC%97%85pull-request)
 
 ## 0. Hello, Next.js
 
