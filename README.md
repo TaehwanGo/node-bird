@@ -975,3 +975,53 @@ npm i -D nodemon
 
 - 실행할때 node app 대신 nodemon app 이라고 치면 됨
 - 저장할때마다 서버를 재시작 시켜줌
+
+### 4-8. 회원가입 구현하기
+
+front에서
+post 방식으로 /user (http://localhost:3065/user)
+
+Http 통신 방식에서
+GET, DELETE는 Data를 못 넘기는데
+POST, PUT, PATCH는 넘길 수 있음
+
+```javascript
+function signUpAPI(data) {
+  return axios.post('backend api url', data); // data : json
+}
+```
+
+// 위 front-end에서 넘긴 data가
+backend에선 req.body로 들어옴
+
+app.use(something) : express server에 something(middleware)을 장착한다는 뜻
+middleware장착하는 코드(app.use())는 라우터보다 위에 있어야 함
+
+```javascript
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+// front에서 보낸 data를 req.body에 넣어주는 역할
+```
+
+db에 비밀번호를 그대로 저장할 수 없으므로 암호화 라이브러리를 사용
+
+- npm i bcrypt
+  - 사용도 간편하고 많이 쓰임
+
+async - await 비동기 함수는 try catch로 감싸줘야 함
+
+- [ ] next(error); // req, res, next의 next를 통해서 error를 보내면 에러가 한번에 처리됨
+  - 뭔지 자세히 알아보기
+
+```javascript
+res.status(200).send('ok');
+```
+
+상태코드(status(200) 같은)
+200 성공, 201 잘 생성됨
+300 리다이렉트
+400 클라이언트 에러
+500 서버 에러
+상태코드는 생략이 가능하지만 생략하지 않는게 명확해서 더 좋다.
+
+### next) 4-9. CORS 문제 해결하기
