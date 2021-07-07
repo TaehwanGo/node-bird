@@ -15,13 +15,15 @@ router.post('/', async (req, res, next) => {
       return res.status(403).send('이미 사용중인 아이디입니다.');
       // status(상태코드) 도 header에 포함됨
     }
+
     const hashedPassword = await bcrypt.hash(req.body.password, 10); // 2번째 param인 숫자 : hash정도 숫자가 높을 수록 보안이 높지만 시간이 오래걸림(10~13 정도 줌)
     // POST방식의 '/user/'
     await User.create({
       email: req.body.email,
       nickname: req.body.nickname,
-      password: req.body.password,
+      password: hashedPassword,
     });
+    res.setHeader('Access-Control-Allow-Origin', '*');
     res.status(200).send('ok');
   } catch (error) {
     console.error(error);

@@ -1024,4 +1024,47 @@ res.status(200).send('ok');
 500 서버 에러
 상태코드는 생략이 가능하지만 생략하지 않는게 명확해서 더 좋다.
 
-### next) 4-9. CORS 문제 해결하기
+### 4-9. CORS 문제 해결하기
+
+dev tool Network : ERR_CONNECTION_REFUSED : 서버 접속이 안됨
+
+- 서버가 꺼져있거나 방화벽에 의해 막혀있거나
+
+console : Access to XMLHttpRequest at 'url' from origin 'url' has been blocked by CORS policy <br />
+No 'Access-Control-Allow-Origin' header is present on the requested resource.
+
+- SOP : 다른 도메인으로 요청을 보내서 받는 응답(데이터)를 브라우저가 차단을 하는 것
+  - 서버끼리 통신할 땐 생기지 않음(브라우저가 아니므로)
+
+CORS를 피하는 방법
+
+- 방법 1 (proxy 방식)
+  - 브라우저 -> 프론트로 요청 -> 프론트에서 백엔드로 -> 백엔드에서 프론트로 -> 프론트에서 브라우저로
+- 방법 2
+  - 브라우저에서 백엔드로 요청하면 백엔드에선 'Access-Control-Allow-Origin' header를 같이 보내는 것
+
+```javascript
+res.setHeader('Access-Control-Allow-Origin', 'url');
+// url
+// -> * : 모든 주소에 허용
+// -> localhost:3060 (내 프론트 로컬서버)
+```
+
+- 위와 같이 적어도 되지만 middle ware를 사용해서 처리
+  - npm i cors
+
+```javascript
+// app.js
+const cors = require('cors');
+app.use(
+  cors({
+    origin: 'http://localhost:3060',
+  }),
+);
+// cors({'*'}) : *
+// cors({origin : true}) : 보낸 곳의 주소가 자동으로 들어감
+```
+
+Postman 으로 form data 테스트 할 때 x-www-form-urlencoded 에 체크해서 보내야 함
+
+### next) 4-10. passport로 로그인
