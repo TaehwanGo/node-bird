@@ -1067,4 +1067,97 @@ app.use(
 
 Postman 으로 form data 테스트 할 때 x-www-form-urlencoded 에 체크해서 보내야 함
 
-### next) 4-10. passport로 로그인
+### 4-10. passport로 로그인
+
+github, facebook, google 등 로그인을 관리해주는 모듈 : passport
+email, password로 로그인을 도와주는 모듈 : passport local
+
+[Passport 공식문서](http://www.passportjs.org/docs/)
+[Passport 공식문서 : local](http://www.passportjs.org/packages/passport-local/)
+
+npm i passport passport-local
+
+passport dir 생성
+
+- index.js : passport 설정파일
+
+- [x] passport/local.js 에서 bcrypt.compare() 에서 그냥 비교가 가능한가? user router에선 10으로 설정한 그 값을 안적어줘도 되는건가?
+
+  - [공식문서에도 설정값을 같이 넣지 않음](https://www.npmjs.com/package/bcrypt)
+
+- [ ] express의 req.login()
+  - req.login()의 return값은 res.setHeader('Cooke', 'cxlhy'); 같이 쿠키를 보내주고
+  - 알아서 세션이랑도 연결 해줌
+
+### 4-11. cookie, session 전체 로그인 흐름
+
+passport로 로그인 통과 시킨 후 유저 정보를 보내주는 것 뿐만 아니라 로그인 정보를 저장 : 세션
+
+npm i express-session
+
+세션 설정
+
+```javascript
+// app.js
+// passport로 session에 로그인이 되면 그것을 세션에 저장
+app.use(cookieParser());
+app.use(session());
+app.use(passport.initialize());
+app.use(passport.session());
+```
+
+쿠키파서 설치
+npm i cookie-parser
+
+![cookieAndSession](images/cookieAndSession.PNG)
+쿠키랑 세션이 필요한 이유<br />
+로그인 -> 브라우저와 서버가 같은 정보를 갖고 있어야 함
+-> 로그인하면 브라우저(유저) 한테 회원정보를 다 줄 수 없으므로 세션에 저장하고 그 세션의 아이디를 쿠키로 보냄
+
+세션이 user정보를 통으로 들고 있으면 너무 무거움
+
+- 그래서 passport가 id만 가지고 있다가 요청받을 때만 user id만 가지고 있음
+- 나중에 세션 저장용 db로 redis를 사용
+  - [ ] redis 란?
+
+npm i dotenv
+
+```javascript
+// 사용 예
+const dotenv = require('dotenv');
+dotenv.config();
+process.env.
+```
+
+config.json파일엔 dotenv를 사용하지 못 하므로
+config.js로 변경 후 사용
+
+로그인 프로세스 정리
+
+1. 프론트에서 POST:/user/login, data 보냄
+2. 서버에서 router.user에서 전략(local) 실행
+
+```javascript
+router.post('/login', (req, res, next) => {
+  passport.authenticate('local', (err, user, info) => {
+    ...
+  })(req, res, next);
+});
+```
+
+3. passport/local.js 가 전략을 통해 들어감
+
+- 정상적으로 처리되면 done 콜백 실행 -> 다시 router/user.js에서 passport login을 함
+
+4. passport login -> passport.index.js 실행
+
+- 세션에 user id만 저장하고 그 세션 id를 쿠키로 생성
+
+5. router/user.js 에서 최종적으로 res.status(200).json(user)에서 쿠키를 같이 보내줌
+
+dotenv 인식 안되는 이슈
+
+- .env 파일을 back 폴더 안에 넣어야 되는데 그 밖에 만들었음
+- .env파일을 back으로 이동 후 해결
+
+### 4-12 로그인 문제 해결하기

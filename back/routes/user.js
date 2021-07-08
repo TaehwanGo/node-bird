@@ -1,7 +1,30 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
+const passport = require('passport');
 const { User } = require('../models');
 const router = express.Router();
+
+router.post('/login', (req, res, next) => {
+  passport.authenticate('local', (err, user, info) => {
+    // 서버에러(err), 성공(user), 정보(info)
+    if (err) {
+      console.error(err);
+      return next(err);
+    }
+    if (info) {
+      return res.status(401).send(info.reason); // 401 허가되지 않음
+    }
+    return req.login(user, async loginErr => {
+      // 내 서비스의 에러가 아닌 passport의 에러, 살면서 본적 없음(serialize에서 done(null, user.id) 제대로 안적어주 면 뜸)
+      if (loginErr) {
+        console.error('loginErr :', loginErr);
+        return next(loginErr);
+      }
+      console.log('전송되는 user:', user); // serialize돼서 user.id만 출력됨
+      return res.status(200).json(user);
+    });
+  })(req, res, next); // (req, res, next)를 사용하기 위해 middleware의 확장
+}); // 로그인 한 뒤 부턴 req.user에 정보가 들어있음
 
 router.post('/', async (req, res, next) => {
   try {
@@ -29,6 +52,12 @@ router.post('/', async (req, res, next) => {
     console.error(error);
     next(error); // req, res, next의 next를 통해서 error를 보내면 에러가 한번에 처리됨 next(error) == status(500)
   }
+});
+
+router.post('/user/logout', (req, res, next) => {
+  req.logout();
+  req.session.destroy();
+  res.send('ok');
 });
 
 module.exports = router;
