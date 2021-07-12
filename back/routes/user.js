@@ -15,7 +15,7 @@ router.post('/login', (req, res, next) => {
       return res.status(401).send(info.reason); // 401 허가되지 않음
     }
     return req.login(user, async loginErr => {
-      // 내 서비스의 에러가 아닌 passport의 에러, 살면서 본적 없음(serialize에서 done(null, user.id) 제대로 안적어주 면 뜸)
+      // 내 서비스의 에러가 아닌 passport의 에러, serialize에서 done(null, user.id) 제대로 안적어주 면 뜸
       if (loginErr) {
         console.error('loginErr :', loginErr);
         return next(loginErr);

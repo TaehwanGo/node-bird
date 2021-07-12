@@ -533,9 +533,102 @@ Form을 수작업으로 만들어도 되지만 Form관련 라이브러리를 쓰
 
 component에 props로 넘겨주는 함수(onChange 같은 것들)은 useCallback()을 사용하자 그래야 최적화가 된다.
 
-- [ ] useCallback 이란?
+- [x] useCallback 이란?
+  - [useCallback 공식문서](https://reactjs.org/docs/hooks-reference.html#usecallback)
+
+```javascript
+const memoizedCallback = useCallback(() => {
+  doSomething(a, b);
+}, [a, b]);
+```
+
+- [벨로퍼트, useCallback 사용하기](https://react.vlpt.us/basic/18-useCallback.html?q=)
 
 반복 되는 함수는들은 custom hook으로 처리 할 수 있음
+
+- 배열 부분이 바뀌지 않는 이상 캐싱이 되어서 렌더링 최적화를 할 수 있음
+
+### 1-5. 리렌더링 이해하기
+
+```javascript
+<div style={{ marginTop: '10px' }}>
+  <Button type="primary" htmlType="submit" loading={false}>
+    로그인
+  </Button>
+</div>
+```
+
+이런식으로 style에 객체를 바로 넣어주면 안됨 {} == {} : false 이기 때문에 리렌더링 됨
+
+- 성능에 크게 영향이 없다면 그냥 인라인 스타일 써도 됨
+- 너무 집착할 필요는 없음
+
+```javascript
+const ButtonWrapper = styled.div`
+  margin-top: 10px;
+`;
+```
+
+만약 컴포넌트를 스타일 하고 싶다면?
+
+```javascript
+const SearchInput = styled(Input.Search)`
+  vertical-align: middle;
+`;
+```
+
+styled component를 사용하지 않는 다면? useMemo
+
+- useCallback vs useMemo
+  - useCallback : 함수를 캐싱
+  - useMemo : 값을 캐싱
+
+```javascript
+const ButtonWrapper = styled.div`
+  margin-top: 10px;
+`;
+// 위 코드 대신
+const style = useMemo(() => ({ margin-top: 10px; }), []);
+<div style={style}>
+  <Button type="primary" htmlType="submit" loading={false}>
+    로그인
+  </Button>
+</div>
+// 이렇게 만들어도 됨
+```
+
+=> 리렌더링 최적화
+
+리렌더링 되면 렌더링 함수 안의 부분이 처음부터 끝까지 다시 실행되는 것은 맞지만 useCallback, useMemo을 제외하고 바뀌지 않은 부분도 제외하고 바뀐걸로 인식되는 부분만 다시 그림
+
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
 
 ## 4. 백엔드 노드 서버 구축하기
 
@@ -1159,5 +1252,7 @@ dotenv 인식 안되는 이슈
 
 - .env 파일을 back 폴더 안에 넣어야 되는데 그 밖에 만들었음
 - .env파일을 back으로 이동 후 해결
+
+[postman으로 로그인 테스트](https://stackoverflow.com/questions/38779992/setting-up-postman-for-api-testing-when-using-passport-authorization)
 
 ### 4-12 로그인 문제 해결하기
