@@ -1,7 +1,10 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback } from 'react';
 import { Form, Input, Button } from 'antd';
 import Link from 'next/link';
 import styled from 'styled-components';
+import useInput from '../hooks/useInput';
+import { useDispatch } from 'react-redux';
+import { loginAction } from '../reducers';
 
 const ButtonWrapper = styled.div`
   margin-top: 10px;
@@ -11,20 +14,14 @@ const FormWrapper = styled(Form)`
   padding: 10px;
 `;
 
-const LoginForm = ({ setIsLoggedIn }) => {
-  const [id, setId] = useState('');
-  const [password, setPassword] = useState('');
-
-  const onChangeId = useCallback(e => {
-    setId(e.target.value);
-  }, []);
-  const onChangePassword = useCallback(e => {
-    setPassword(e.target.value);
-  }, []);
+const LoginForm = () => {
+  const dispatch = useDispatch(); // store.dispatch와 같은 것
+  const [id, onChangeId] = useInput('');
+  const [password, onChangePassword] = useInput('');
 
   const onSubmitForm = useCallback(() => {
     console.log(id, password);
-    setIsLoggedIn(true);
+    dispatch(loginAction({ id, password })); // setIsLoggedIn(true);
   }, [id, password]); // state는 dependency에 넣어줘야 최신 상태로 가져올 수 있음
 
   return (

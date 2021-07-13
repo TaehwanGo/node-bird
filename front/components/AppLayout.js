@@ -5,13 +5,16 @@ import { Menu, Input, Row, Col, Switch } from 'antd';
 import styled from 'styled-components';
 import UserProfile from './UserProfile';
 import LoginForm from './LoginForm';
+import { useSelector } from 'react-redux';
 
 const SearchInput = styled(Input.Search)`
   vertical-align: middle;
 `;
 
 const AppLayout = ({ children }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const isLoggedIn = useSelector(state => state.user.isLoggedIn); // isLoggedIn이 바뀌면 알아서 re-rendering 됨
+
+  // 좋아 나중에 리덕스로 다크모드 관리해보자
   const [theme, setTheme] = useState('light');
   let body;
   useEffect(() => {
@@ -61,11 +64,7 @@ const AppLayout = ({ children }) => {
 
       <Row gutter={8}>
         <Col xs={24} md={6}>
-          {isLoggedIn ? (
-            <UserProfile setIsLoggedIn={setIsLoggedIn} />
-          ) : (
-            <LoginForm setIsLoggedIn={setIsLoggedIn} />
-          )}
+          {isLoggedIn ? <UserProfile /> : <LoginForm />}
         </Col>
         <Col xs={24} md={12}>
           {children}
