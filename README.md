@@ -601,6 +601,47 @@ const style = useMemo(() => ({ margin-top: 10px; }), []);
 
 리렌더링 되면 렌더링 함수 안의 부분이 처음부터 끝까지 다시 실행되는 것은 맞지만 useCallback, useMemo을 제외하고 바뀌지 않은 부분도 제외하고 바뀐걸로 인식되는 부분만 다시 그림
 
+### 1-6. 더미 데이터로 로그인하기
+
+antd의 Form에 onFinish는 e.preventDefault 가 적용이 되어 있음
+
+```javascript
+const onSubmitForm = e => {
+  // e.preventDefault(); // antd의 onFinish는 이미 적용되어 있음
+};
+
+return <Form onFinish={onSubmitForm}>// ...</Form>;
+```
+
+#### UserProfile component
+
+antd의 Card component 사용
+
+react에서 배열로 JSX 쓸 땐 key 붙여 줘야 함
+
+```javascript
+<Card
+  actions={[
+    <div key="twit">
+      짹짹
+      <br />0
+    </div>,
+    <div key="folowings">
+      팔로잉
+      <br />0
+    </div>,
+    <div key="followers">
+      팔로워
+      <br />0
+    </div>,
+  ]}
+>
+  <Card.Meta avatar={<Avatar>TH</Avatar>} title="Tony" />
+</Card>
+```
+
+### 1-7. 크롬 확장 프로그램과 Q&A
+
 <br />
 <br />
 <br />
