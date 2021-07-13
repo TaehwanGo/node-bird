@@ -886,6 +886,93 @@ redux dev tools
 - diff : 뭐가 바뀌었는지 보여줌
 - state : 전체 상태를 보여줌
 
+### 2-5. 리듀서 쪼개기
+
+intialstate안에 있는 것을 기준으로 파일을 나눔
+
+reducer : 이전 state와 action을 받아서 다음 state를 돌려주는 함수
+
+분리한 reducer는 결국 root reducer에서 합쳐줘야 함
+
+나누면서 주의해야 될 점 : depth가 한단계 낮아준 것을 빼줘야 함
+
+```javascript
+// 분리전(rootReducer에서)
+return {
+  ...state,
+  user: {
+    ...state.user,
+    isLoggedIn: false,
+    user: null,
+  },
+};
+
+// 분리 후(user reducer에서)
+return {
+  ...state,
+  isLoggedIn: false,
+  user: null,
+};
+```
+
+combineReducers : 리듀서를 합치는 메서드
+
+- reducer는 함수인데 함수들 끼리 합치는 것은 쉽지 않아서 combineReducers의 도움을 받음
+
+```javascript
+const initialState = {
+  // 합치면서 없어짐, 이미 user, post에 분배했기 때문
+  user: {},
+  post: {},
+};
+
+// 합치기 전 root reducer
+const rootReducer = (state = initialState, action) => {
+  switch (action.type) {
+    case HYDRATE:
+      console.log('action of HYDRATE', action);
+      return {
+        ...state,
+        ...action.payload,
+      };
+
+    default:
+      return state;
+  }
+};
+```
+
+```javascript
+// 합친 후 root reducer
+const rootReducer = combineReducers({
+  index: (state = {}, action) => {
+    switch (action.type) {
+      case HYDRATE:
+        console.log('action of HYDRATE', action);
+        return {
+          ...state,
+          ...action.payload,
+        };
+
+      default:
+        return state;
+    }
+  },
+  user,
+  post,
+});
+```
+
+리덕스 ssr을 위해 HYDRATE를 사용 - HYDRATE를 위한 index 리듀서도 추가됨
+
+### 2-6. 더미데이터와 포스트폼 만들기
+
+styled component의 SSR문제는 나중에 해결
+
+- 프론트엔드 서버에서 HTML을 데이터와 합쳐서 그려줌
+- 이때 styled component는 SSR설정이 안돼있기 때문에 서버쪽에선 Styled component설정이 안된 채로 내려오는 문제
+- 2-7에서 다룸
+
 <br />
 <br />
 <br />

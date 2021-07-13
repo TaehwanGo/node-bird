@@ -1,63 +1,25 @@
 import { HYDRATE } from 'next-redux-wrapper';
-
-const initialState = {
-  user: {
-    isLoggedIn: false,
-    user: null,
-    signUpData: {},
-    loginData: {},
-  },
-  post: {
-    mainPosts: [],
-  },
-};
-
-export const loginAction = data => {
-  return {
-    type: 'LOG_IN',
-    data,
-  };
-};
-
-export const logoutAction = () => {
-  return {
-    type: 'LOG_OUT',
-  };
-};
+import { combineReducers } from 'redux';
+import user from './user';
+import post from './post';
 
 // (이전상태, 액션) => 다음상태
-const rootReducer = (state = initialState, action) => {
-  // Y 모양 처럼 두개를 받아서 하나로 축소를 함: 레듀샤
-  switch (action.type) {
-    case HYDRATE:
-      console.log('action of HYDRATE', action);
-      return {
-        ...state,
-        ...action.payload,
-      };
-    case 'LOG_IN':
-      return {
-        // 항상 새로운 것을 만들어서 return
-        ...state,
-        user: {
-          ...state.user,
-          isLoggedIn: true,
-          user: action.data,
-        },
-      };
-    case 'LOG_OUT':
-      return {
-        // 항상 새로운 것을 만들어서 return
-        ...state,
-        user: {
-          ...state.user,
-          isLoggedIn: false,
-          user: null,
-        },
-      };
-    default:
-      return state;
-  }
-};
+const rootReducer = combineReducers({
+  index: (state = {}, action) => {
+    switch (action.type) {
+      case HYDRATE:
+        console.log('action of HYDRATE', action);
+        return {
+          ...state,
+          ...action.payload,
+        };
+
+      default:
+        return state;
+    }
+  },
+  user,
+  post,
+});
 
 export default rootReducer;
