@@ -973,6 +973,49 @@ styled component의 SSR문제는 나중에 해결
 - 이때 styled component는 SSR설정이 안돼있기 때문에 서버쪽에선 Styled component설정이 안된 채로 내려오는 문제
 - 2-7에서 다룸
 
+back에서 sequelize가 어떤 정보들을 합쳐서 나오는 것은 앞글자가 대문자
+
+initialState의 mainPosts 외 다른 속성들
+
+- imagePaths : 이미지 업로드 될 경로들이 저장
+- postAdded : 게시글 추가가 완료되면 true로 변함
+
+데이터 구성 -> 액션 작성해서 리듀서 구성 -> 화면
+
+서버개발자와 리덕스 데이터 구조에 대해선 미리 협의를 해야함
+
+코딩할 때 묶일수 있는 단위가 있으면 이름을 먼저 정하자
+
+```javascript
+// index.js
+const Home = () => {
+  return (
+    <AppLayout>
+      <PostForm />
+      <PostCard />
+    </AppLayout>
+  );
+};
+
+export default Home;
+```
+
+- [ ] useSelector ?
+
+```javascript
+{
+  mainPosts.map((post, index) => <PostCard key={index} post={post} />);
+}
+```
+
+key를 index로 쓰면 안됨 : 바뀔 가능성이 있는 경우
+
+- 바뀔 가능성이 전혀 없으면 써도 됨
+
+const imageInput = useRef() 로 등록한 것을 imageInput.current로 접근 가능
+
+### 2-7. 게시글 구현하기
+
 <br />
 <br />
 <br />
