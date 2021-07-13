@@ -642,6 +642,65 @@ react에서 배열로 JSX 쓸 땐 key 붙여 줘야 함
 
 ### 1-7. 크롬 확장 프로그램과 Q&A
 
+```html
+<a href="https://www.taehwango.info" target="_blank" rel="noreferrer noopener">
+  Made by Tony
+</a>
+```
+
+rel="noreferrer noopener"를 target="\_blank" 할 때 붙여줘야 함(보안)
+
+- 새창을 열때 어떤창으로 부터 넘어왔는지 정보가 전송되는 것을 방지
+
+react developer tools
+
+redux dev tools
+
+mobx dev tools
+
+React나 Vue랑 jQuery를 같이 쓰면 안좋은 이유
+
+- React나 Vue에서 데이터가 바뀌었을 때 알아서 화면을 다시 그려줌
+- jQuery는 자기가 직접 화면을 다시 그려야 함
+
+Echarts : 오픈소스 차트 라이브러리, 퀄리티 높음
+
+### 1-8. 프로필 페이지 만들기
+
+페이지나 컴포넌트 설계 할 때 큼직하게 먼저 생각하는게 좋음
+
+```javascript
+// profile 페이지
+const followerList = [
+  { nickname: 'tony' },
+  { nickname: 'noah' },
+  { nickname: 'minsu' },
+];
+const followingList = [
+  { nickname: 'tony' },
+  { nickname: 'noah' },
+  { nickname: 'minsu' },
+];
+<AppLayout>
+  <NicknameEditForm />
+  <FollowList header="팔로잉 목록" data={followingList} />
+  <FollowList header="팔로워 목록" data={followerList} />
+</AppLayout>;
+```
+
+이후 세부 구현
+
+Form은 귀찮은 작업들이 많으니 React-hook-form같은 라이브러리 사용할 것을 추천
+
+- input 하나하나를 다 컨트롤 하는게 매우 번거로운 일임
+
+컴포넌트 스타일 커스텀 : 자동완성 기능이 지원되는 css기능을 이용하는게 개인적으로 편한 것 같다
+
+- original css 파일로 스타일을 하는 이유
+- 강좌에선 styled component를 선호함(요즘은 이모션으로 넘어가는 추세)
+
+### 1-9. 회원가입 페이지 만들기(커스텀 훅)
+
 <br />
 <br />
 <br />

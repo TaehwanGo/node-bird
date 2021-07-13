@@ -71,7 +71,11 @@ const AppLayout = ({ children }) => {
           {children}
         </Col>
         <Col xs={24} md={6}>
-          <a href="https://www.taehwango.info" target="_blank" rel="noreferrer">
+          <a
+            href="https://www.taehwango.info"
+            target="_blank"
+            rel="noreferrer noopener"
+          >
             Made by Tony
           </a>
         </Col>
