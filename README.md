@@ -858,6 +858,34 @@ useState를 사용할 일이 많이 줄어 들음
 
 ### 2-4. 미들웨어와 리덕스 데브툴즈
 
+HYDRATE : 나중에 6강에서 설명
+
+- getInitialProps가 거의 안쓰이고
+- getStaticProps, getServerSideProps가 쓰이면서 새로 생긴 것
+
+enhancer, compose(applyMiddleware([])) 알아보기
+
+- enhancer : 리덕스의 기능이 확장된 것이라서 enhancer
+
+composeWithDevTools(applyMiddleware([]))
+
+- 히스토리가 쌓이면 메모리도 많이 잡아먹음, 중앙 데이터들이 다 보이기 때문에 보안에 취약할 수 있음(데브툴과 연결)
+- 그래서 배포용엔 데브툴을 연결 안함
+- saga나 thunk는 위 배열안에 넣음
+
+npm i redux-devtools-extension
+
+- 이게 있어야 브라우저 개발자 도구랑 연동이 됨
+
+포트 바꾸고 싶으면 package.json 스크립트에서 next -p (포트번호)
+
+- default는 3000번
+
+redux dev tools
+
+- diff : 뭐가 바뀌었는지 보여줌
+- state : 전체 상태를 보여줌
+
 <br />
 <br />
 <br />

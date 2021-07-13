@@ -1,3 +1,5 @@
+import { HYDRATE } from 'next-redux-wrapper';
+
 const initialState = {
   user: {
     isLoggedIn: false,
@@ -27,6 +29,12 @@ export const logoutAction = () => {
 const rootReducer = (state = initialState, action) => {
   // Y 모양 처럼 두개를 받아서 하나로 축소를 함: 레듀샤
   switch (action.type) {
+    case HYDRATE:
+      console.log('action of HYDRATE', action);
+      return {
+        ...state,
+        ...action.payload,
+      };
     case 'LOG_IN':
       return {
         // 항상 새로운 것을 만들어서 return
@@ -47,6 +55,8 @@ const rootReducer = (state = initialState, action) => {
           user: null,
         },
       };
+    default:
+      return state;
   }
 };
 
