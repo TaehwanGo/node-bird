@@ -969,7 +969,7 @@ const rootReducer = combineReducers({
 
 styled component의 SSR문제는 나중에 해결
 
-- 프론트엔드 서버에서 HTML을 데이터와 합쳐서 그려줌
+- SSR : 프론트엔드 서버에서 HTML을 데이터와 합쳐서 그려줌
 - 이때 styled component는 SSR설정이 안돼있기 때문에 서버쪽에선 Styled component설정이 안된 채로 내려오는 문제
 - 2-7에서 다룸
 
@@ -1015,6 +1015,52 @@ key를 index로 쓰면 안됨 : 바뀔 가능성이 있는 경우
 const imageInput = useRef() 로 등록한 것을 imageInput.current로 접근 가능
 
 ### 2-7. 게시글 구현하기
+
+PostCard 기획
+
+```javascript
+<Card
+  cover={post.Images[0] && <PostImages images={post.Images} />}
+  actions={[
+    <RetweetOutlined />,
+    <HeartOutlined />,
+    <MessageOutlined />,
+    <Popover>
+      <EllipsisOutlined />,
+    </Popover>,
+  ]}
+>
+```
+
+필요한 것을 죽 나열하면서 적고
+각각의 컴포넌트 구현은 나중에
+
+배열이 들어가는 것은 배열 안에 key를 꼭 적어야 함
+
+- [x] useSelector 알아보기
+  - react-redux에서 제공하는 local state를 가져오는 hooks
+
+```javascript
+const result: any = useSelector(selector: Function, equalityFn?: Function)
+
+// 사용예
+const { me } = useSelector((state) => state.user);
+```
+
+```javascript
+const { me } = useSelector(state => state.user);
+const id = me?.id; // me && me.id;
+// 위 코드를 줄여서
+const id = useSelector(state => state.user.me?.id);
+```
+
+```javascript
+// toggle switch 작성법 prev => !prev
+const onToggleLike = useCallback(() => {
+  setLiked(prev => !prev);
+}, []);
+// setLiked(prev => !prev);에서 prev => !prev 대신 !liked는 왜 안될까? 이전 그 코드 런타임에서 liked의 값이 갱신되지 않기 때문
+```
 
 <br />
 <br />

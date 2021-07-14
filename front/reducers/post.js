@@ -7,7 +7,7 @@ export const initialState = {
         nickname: 'tony',
       },
       content: '첫 번째 게시글 #헤시태그 #익스프레스',
-      Image: [
+      Images: [
         {
           src: 'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg',
         },
@@ -18,7 +18,7 @@ export const initialState = {
           src: 'https://media.vlpt.us/images/jongbeen_song/post/174477f5-01a8-4e7a-94c8-4801e36dbb06/111111111.png',
         },
       ],
-      Comment: [
+      Comments: [
         {
           User: {
             nickname: 'taehwan',
