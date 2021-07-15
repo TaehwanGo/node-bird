@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { Card, Button, Popover, Avatar } from 'antd';
+import { Card, Button, Popover, Avatar, List, Comment } from 'antd';
 import {
   RetweetOutlined,
   HeartOutlined,
@@ -10,6 +10,7 @@ import {
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import PostImages from './PostImages';
+import CommentForm from './CommentForm';
 
 const PostCard = ({ post }) => {
   // 임시로 like, comment 불 들어오는 것을 위한 state
@@ -64,7 +65,25 @@ const PostCard = ({ post }) => {
           description={post.content}
         />
       </Card>
-      {commentFormOpened && <div>댓글 부분</div>}
+      {commentFormOpened && (
+        <div>
+          <CommentForm post={post} />
+          <List
+            header={`${post.Comments.length}개의 댓글`}
+            itemLayout="horizontal"
+            dataSource={post.Comments}
+            renderItem={item => (
+              <li>
+                <Comment
+                  author={item.User.nickname}
+                  avatar={<Avatar>{item.User.nickname[0]}</Avatar>}
+                  content={item.content}
+                />
+              </li>
+            )}
+          />
+        </div>
+      )}
       {/* <CommentForm />
       <Comments /> */}
     </div>

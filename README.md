@@ -1062,6 +1062,12 @@ const onToggleLike = useCallback(() => {
 // setLiked(prev => !prev);에서 prev => !prev 대신 !liked는 왜 안될까? 이전 그 코드 런타임에서 liked의 값이 갱신되지 않기 때문
 ```
 
+### 2-8. 댓글 구현하기
+
+- 미리 백엔드에서 데이터가 어떻게 올지는 알고 있어야 프론트 화면을 만들 수 있다
+
+### 2-9. 이미지 구현하기
+
 <br />
 <br />
 <br />
