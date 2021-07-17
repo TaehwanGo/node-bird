@@ -1068,6 +1068,18 @@ const onToggleLike = useCallback(() => {
 
 ### 2-9. 이미지 구현하기
 
+react native까지 고려하면 .css 파일을 따로 만들어서 스타일링 하는 것보다 styled-component나 스타일 object를 만드는 것이 더 좋은 것 같다.
+
+### 2-10. 이미지 캐루셀 구현하기(react-slick)
+
+```html
+<img rol="presentation" />
+```
+
+rol="presentation" 을 입력하면 시작장애인들이 스크린리더로 볼때 이미지는 맞지만 굳이 클릭할 필요가 없다는 것을 알려줌
+
+제대로 이 것을 복습하려면 모든 컴포넌트에 적어도 기능 하나이상 더 넣어보기
+
 <br />
 <br />
 <br />
