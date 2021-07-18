@@ -1459,6 +1459,39 @@ throttling vs debouncing 차이
 
 ### 3-5. saga쪼개고 reducer와 연결하기
 
+reducer랑 비슷하게 쪼개면 됨
+
+combine reducer까진 필요 없음
+
+- [ ] combine reducer란?
+  - reducer 합칠 땐 combine reducer로 합침
+
+#### 흐름 복습
+
+LoginForm - 로그인
+
+- id, pw 적고 로그인 버튼 클릭
+- onSubmit에 있는 dispatch(loginRequestAction({id, password}) 가 실행 됨
+- sagas/user.js의 이벤트 리스너에 걸림
+
+```javascript
+function* watchLogin() {
+  // 비동기 action 크리에이터
+  yield takeLatest('LOG_IN_REQUEST', login); // login request 이벤트 리스너
+}
+```
+
+- saga의 login 제너레이터 함수 실행 되면서
+- 동시에 reducer의 switch문 실행 : isLoggingIn: true // reducer가 saga보다 더 먼저실행됨(거의 동시에 실행되긴함)
+- login 제너레이터에 걸어놓은 1초 delay 이후 success가 실행됨
+- login 제너레이터의 put 이펙트에 의해 LOG_IN_SUCCESS 액션이 실행
+- LOG_IN_SUCCESS 액션이 reducer의 switch문에 있는 대로 state값이 변경 + me에 data 들어감
+  - isLoggingIn: false, isLoggedIn: true
+  - me: { ...action.data, nickname: 'tony' }
+- appLayout에 isLoggedIn이 true로 바뀜에 따라 `<LoginForm />` 대신 `<UserProfile />` 로 보여지는 component가 바뀜
+
+### 3-6. 액션과 상태 정리하기
+
 <br />
 <br />
 <br />

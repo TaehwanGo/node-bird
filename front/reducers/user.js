@@ -1,26 +1,10 @@
 export const initialState = {
+  isLoggingIn: false, // 로그인 시도 중
   isLoggedIn: false,
+  isLoggingOut: false, // 로그아웃 시도 중
   me: null,
   signUpData: {},
   loginData: {},
-};
-
-export const loginAction = data => {
-  return (dispatch, getState) => {
-    const state = getState(); // reducer/index.js에 있는 것처럼 index, user, post 같은 initialState가 나옴
-    setTimeout(() => {
-      dispatch(loginRequestAction());
-    }, 2000);
-    dispatch(loginRequestAction());
-    axios
-      .post('/api/login')
-      .then(res => {
-        dispatch(loginSuccessAction(res.data));
-      })
-      .catch(err => {
-        dispatch(loginFailureAction(err));
-      });
-  };
 };
 
 export const loginRequestAction = data => {
@@ -30,25 +14,7 @@ export const loginRequestAction = data => {
   };
 };
 
-export const loginSuccessAction = data => {
-  return {
-    type: 'LOG_IN_SUCCESS',
-    data,
-  };
-};
-
-export const loginFailureAction = data => {
-  return {
-    type: 'LOG_IN_FAILURE',
-    data,
-  };
-};
-
-export const logoutAction = () => {
-  return {
-    type: 'LOG_OUT',
-  };
-};
+// SUCCESS, FAILURE action이 필요없는 이유 : saga가 알아서 호출 : put으로
 
 export const logoutRequestAction = () => {
   return {
@@ -56,31 +22,43 @@ export const logoutRequestAction = () => {
   };
 };
 
-export const logoutSuccessAction = () => {
-  return {
-    type: 'LOG_OUT_SUCCESS',
-  };
-};
-
-export const logoutFailureAction = () => {
-  return {
-    type: 'LOG_OUT_FAILURE',
-  };
-};
-
 const reducer = (state = initialState, action) => {
   switch (action.type) {
-    case 'LOG_IN':
+    case 'LOG_IN_REQUEST':
       return {
         ...state,
-        isLoggedIn: true,
-        me: action.data,
+        isLoggingIn: true,
       };
-    case 'LOG_OUT':
+    case 'LOG_IN_SUCCESS':
       return {
         ...state,
+        isLoggingIn: false,
+        isLoggedIn: true,
+        // me: action.data,
+        me: { ...action.data, nickname: 'tony' },
+      };
+    case 'LOG_IN_FAILURE':
+      return {
+        ...state,
+        isLoggingIn: false,
+        isLoggedIn: false,
+      };
+    case 'LOG_OUT_REQUEST':
+      return {
+        ...state,
+        isLoggingOut: true,
+      };
+    case 'LOG_OUT_SUCCESS':
+      return {
+        ...state,
+        isLoggingOut: false,
         isLoggedIn: false,
         me: null,
+      };
+    case 'LOG_OUT_FAILURE':
+      return {
+        ...state,
+        isLoggingOut: false,
       };
     default:
       return state;

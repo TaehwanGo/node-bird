@@ -5,22 +5,10 @@ import reducer from '../reducers';
 import createSagaMiddleware from 'redux-saga';
 import rootSaga from '../sagas';
 
-// action이 dispatch 되는 것을 logging하는 미들웨어
-const loggerMiddleware =
-  ({ dispatch, getState }) =>
-  next =>
-  action => {
-    console.log(action);
-    // if (typeof action === 'function') {
-    //   return action(dispatch, getState);
-    // }
-
-    return next(action);
-  };
-
-const configureStore = () => {
+const configureStore = context => {
+  console.log(context);
   const sagaMiddleware = createSagaMiddleware();
-  const middlewares = [sagaMiddleware, loggerMiddleware];
+  const middlewares = [sagaMiddleware];
   const enhancer =
     process.env.NODE_ENV === 'production'
       ? compose(applyMiddleware(...middlewares))
