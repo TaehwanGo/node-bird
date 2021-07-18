@@ -1070,8 +1070,6 @@ const onToggleLike = useCallback(() => {
 
 react native까지 고려하면 .css 파일을 따로 만들어서 스타일링 하는 것보다 styled-component나 스타일 object를 만드는 것이 더 좋은 것 같다.
 
-### 2-10. 이미지 캐루셀 구현하기(react-slick)
-
 ```html
 <img rol="presentation" />
 ```
@@ -1079,6 +1077,83 @@ react native까지 고려하면 .css 파일을 따로 만들어서 스타일링 
 rol="presentation" 을 입력하면 시작장애인들이 스크린리더로 볼때 이미지는 맞지만 굳이 클릭할 필요가 없다는 것을 알려줌
 
 제대로 이 것을 복습하려면 모든 컴포넌트에 적어도 기능 하나이상 더 넣어보기
+
+### 2-10. 이미지 캐루셀 구현하기(react-slick)
+
+ImagesZoom은 ImagesZoom.js를 바로 만들지 않고 폴더를 만들고 index.js를 만드는 이유
+
+- 컴포넌트가 복잡해지면 바로 파일을 만드는게 아니라 폴더를 만들고 index.js를 넣는 경우가 많아짐
+  - why?
+
+npm i react-slick
+
+- carousel 중 가장 유명한 컴포넌트
+- [ ] 디자인 수정 하는 방법 알아보기
+- 속성
+  - initialSlide={0} : 0번째 이미지 부터 시작하겠다는 뜻
+  - afterChange={(slide) => setCurrentSlide(slide)} : 넘길때 슬라이드 번호를 주는데 그것을 currentSlide라는 state에 저장
+  - arrows={false} : 화살표 없이 손으로만 넘길 수 있음
+  - slidesToShow={1} : 한번에 하나씩만 보임
+  - swipeToSlide={1} : 한번에 하나씩만 넘김
+
+```javascript
+const Overlay = styled.div`
+  position: fixed;
+  z-index: 5000;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+`;
+```
+
+화면을 꽉채우려면 fixed 후 top, left, right, bottom 전부 0으로 주면 됨
+
+```javascript
+//함수 호출 방법
+func();
+func``;
+// 위 방법 둘다 가능 javascript에서 지원하는 문법임
+styled.div`` : styled 클래스의 div 메서드를 호출
+// 일반 함수 호출이랑 똑같이 동작하는 것은 아니고 조금 다름
+```
+
+- [x] styled.div`` 같이 백틱으로 함수호출 하는 것과 일반적으로 호출하는 것의 차이점 알아보기
+  - [tagged template literal](https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Template_literals)
+
+styled component 변수명 지옥 벗어나기
+
+```javascript
+const Header = styled.header`
+  height: 44px;
+  background: white;
+  position: relative;
+  padding: 0;
+  text-align: center;
+
+  & h1 {
+    margin: 0;
+    font-size: 17px;
+    color: #333;
+    line-height: 44px;
+  }
+
+  & button {
+  }
+`;
+
+// styled-component 를 nested 구조로 작성할 수 있음
+<Header>
+  <h1>상세 이미지</h1>
+  <button onClick={onClose}>X</button>
+</Header>;
+```
+
+### 참고 문헌
+
+- [react-slick docs/api](https://react-slick.neostack.com/docs/api)
+
+### 2-11. 글로벌 스타일과 컴포넌트 폴더 구조
 
 <br />
 <br />
