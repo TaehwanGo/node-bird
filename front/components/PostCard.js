@@ -11,6 +11,7 @@ import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import PostImages from './PostImages';
 import CommentForm from './CommentForm';
+import PostCardContent from './PostCardContent';
 
 const PostCard = ({ post }) => {
   // 임시로 like, comment 불 들어오는 것을 위한 state
@@ -62,7 +63,7 @@ const PostCard = ({ post }) => {
         <Card.Meta
           avatar={<Avatar>{post.User.nickname[0]}</Avatar>}
           title={post.User.nickname}
-          description={post.content}
+          description={<PostCardContent postData={post.content} />}
         />
       </Card>
       {commentFormOpened && (
