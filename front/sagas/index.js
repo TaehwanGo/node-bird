@@ -1,4 +1,13 @@
-import { all, call, fork, put, take } from 'redux-saga/effects';
+import {
+  all,
+  call,
+  delay,
+  fork,
+  put,
+  takeEvery,
+  takeLatest,
+  throttle,
+} from 'redux-saga/effects';
 import axios from 'axios';
 
 // 로그인
@@ -10,7 +19,8 @@ function loginAPI(data) {
 function* login(action) {
   try {
     // call(loginAPI, action.data, a, b, c) == await loginAPI(action.data, a, b, c)
-    const result = yield call(loginAPI, action.data);
+    // const result = yield call(loginAPI, action.data);
+    yield delay(1000); // 서버가 없을 땐 delay로 비동기 적인 효과를 주면서 테스트
     yield put({
       type: 'LOG_IN_SUCCESS',
       data: result.data,
@@ -30,7 +40,8 @@ function logoutAPI() {
 
 function* logout() {
   try {
-    const result = yield call(logoutAPI);
+    // const result = yield call(logoutAPI);
+    yield delay(1000); // 서버가 없을 땐 delay로 비동기 적인 효과를 주면서 테스트
     yield put({
       type: 'LOG_OUT_SUCCESS',
       data: result.data,
@@ -50,7 +61,8 @@ function addPostAPI(data) {
 
 function* addPost(action) {
   try {
-    const result = yield call(addPostAPI, action.data); // action에서 data꺼내서 addPostAPI로 들어감
+    // const result = yield call(addPostAPI, action.data); // action에서 data꺼내서 addPostAPI로 들어감
+    yield delay(1000); // 서버가 없을 땐 delay로 비동기 적인 효과를 주면서 테스트
     yield put({
       type: 'ADD_POST_SUCCESS',
       data: result.data,
@@ -65,15 +77,15 @@ function* addPost(action) {
 
 function* watchLogin() {
   // 비동기 action 크리에이터
-  yield take('LOG_IN_REQUEST', login); // login이 매개변수를 포함해서 실행하는 것
+  yield takeLatest('LOG_IN_REQUEST', login); // login이 매개변수를 포함해서 실행하는 것
 }
 
 function* watchLogout() {
-  yield take('LOG_OUT_REQUEST', logout);
+  yield takeLatest('LOG_OUT_REQUEST', logout);
 }
 
 function* watchAddPost() {
-  yield take('ADD_POST_REQUEST', addPost);
+  yield throttle('ADD_POST_REQUEST', addPost, 3000); // 3초안의 같은 요청은 무시
 }
 
 export default function* rootSaga() {

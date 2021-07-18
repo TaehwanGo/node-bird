@@ -1408,6 +1408,57 @@ saga는 async await을 사용하는 것에 비해 테스트 할때 정말 좋음
 
 ### 3-4. take, take 시리즈, throttle 알아보기
 
+```javascript
+yield take('LOG_IN_REQUEST', login); // login이 매개변수를 포함해서 실행하는 것
+```
+
+이벤트 리스너 같은 역할을 하지만 치명적 단점 : 1회용
+
+- 1번 이후엔 이벤트 리스너가 사라져버림
+
+```javascript
+function* watchLogin() {
+  while (true) {
+    yield take('LOG_IN_REQUEST', login);
+  }
+}
+```
+
+이렇게 while(true)로 감싸서 해결할 수 있음
+
+```javascript
+function* watchLogin() {
+  yield takeEvery('LOG_IN_REQUEST', login);
+}
+```
+
+직관적으로 takeEvery를 많이 사용
+
+while(true) take vs takeEvery 차이 ?
+
+- while take : 동기적(기다림)
+- takeEvery : 비동기적(안기다림)
+
+![takeLatest](images/ReduxSagaTakeLatest.PNG)
+
+takeLatest : 응답을 취소함, 서버쪽으론 동시에 같은게 두개가 들어감
+
+- 처음엔 게시글이 두개가 안뜨지만 새로고침하면 백엔드엔 두개가 저장되어 있으니 두개가 뜸
+  - throttle로 해결 가능
+
+throttle : yield throttle('ADD_POST_REQUEST', addPost, 3000); // 3초안의 같은 요청은 무시
+
+throttle을 사용하지 않고 takeLatest를 사용하는 대신 서버에서 막을 수도 있음
+
+throttling vs debouncing 차이
+
+- throttling : 마지막 함수가 호출 된 후 일정 시간이 지나기 전에 다시 호출되지 않도록 하는 것
+  - 스크롤링 같은 곳에 이벤트리스너를 달아야 된다면 throttling
+- debouncing : 연이어 호출되는 함수들 중 마지막 함수(또는 제일 처음)만 호출 하도록 하는 것
+  - 검색창에 타이핑할 때 어떤 단어가 완성되면 요청보내고 싶다면 debouncing
+
+### 3-5. saga쪼개고 reducer와 연결하기
+
 <br />
 <br />
 <br />
