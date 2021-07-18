@@ -1251,6 +1251,83 @@ postData.split(/(#[^\s#]+)/g)
 
 ### 3-1. redux-thunk 이해하기
 
+redux-thunk : redux의 middleware
+
+- redux에 없던 기능을 추가
+  - redux가 비동기 action을 dispatch할 수 있도록 도와줌
+- thunk 란? : 프로그래밍 용어, 지연된 함수
+
+npm i redux-thunk
+
+- 9줄 짜리 간단한 소스코드임
+
+#### 참고문헌
+
+- [redux thunk 공식문서](https://github.com/reduxjs/redux-thunk)
+
+```javascript
+function createThunkMiddleware(extraArgument) {
+  return ({ dispatch, getState }) =>
+    next =>
+    action => {
+      // 고차함수, 3단으로 쓰임
+      if (typeof action === 'function') {
+        // action은 원래 object인데 thunk에선 function으로 둘수 있음
+        // action이 function : 지연함수 : action을 나중에 실행 할 수 있음
+        return action(dispatch, getState, extraArgument);
+      }
+
+      return next(action);
+    };
+}
+
+const thunk = createThunkMiddleware();
+thunk.withExtraArgument = createThunkMiddleware;
+
+export default thunk;
+```
+
+login, logout은 서버로 요청을 보내고 그 응답을 받아와야 함
+
+- loginRequestAction
+- loginSuccessAction
+- loginFailureAction
+- logoutRequestAction
+- logoutSuccessAction
+- logoutFailureAction
+
+이렇게 6개가 세트처럼 사용됨
+
+redux thunk를 사용하면 아래와 같이 비동기 액션 크레이에이터가 하나 추가 됨
+
+```javascript
+export const loginAction = data => {
+  return (dispatch, getState) => {
+    const state = getState(); // reducer/index.js에 있는 것처럼 index, user, post 같은 initialState가 나옴
+    dispatch(loginRequestAction());
+    axios
+      .post('/api/login')
+      .then(res => {
+        dispatch(loginSuccessAction(res.data));
+      })
+      .catch(err => {
+        dispatch(loginFailureAction(err));
+      });
+  };
+};
+```
+
+thunk를 안쓰고 saga를 쓰는 이유
+
+- thunk는 짧지만 해주는게 없음 : 한번에 dispatch를 여러번 할 수 있게 해주는 게 끝
+- 그래서 나머지 것들은 다 스스로 구현해야 함
+- saga를 쓰면 : delay 같은 것들이 구현되어 있음
+  - 실수로 로그인 하는 중 클릭을 두번하면 thunk는 두번 다 가지만 saga는 take latest가 있어서 가장 마지막 것 만 보내고 처음건 무시
+  - 쓰로틀 : 스크롤 내릴 때 1초에 수백번 발생하는데 그 안에 비동기요청을 넣으면 순식간에 요청이 수백개가 날라감(DOS 공격) - 자기 서버에 셀프 디도스 공격 할 수 있음
+    - 쓰로틀-디바운스 적용 : 1초에 n번까지 허용 후 나머진 차단
+
+### 3-2. saga 설치하고 generator 이해하기
+
 <br />
 <br />
 <br />
