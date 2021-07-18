@@ -4,7 +4,6 @@ import {
   delay,
   fork,
   put,
-  takeEvery,
   takeLatest,
   throttle,
 } from 'redux-saga/effects';
@@ -23,7 +22,7 @@ function* login(action) {
     yield delay(1000); // 서버가 없을 땐 delay로 비동기 적인 효과를 주면서 테스트
     yield put({
       type: 'LOG_IN_SUCCESS',
-      data: result.data,
+      //   data: result.data,
     });
   } catch (err) {
     yield put({
@@ -44,7 +43,7 @@ function* logout() {
     yield delay(1000); // 서버가 없을 땐 delay로 비동기 적인 효과를 주면서 테스트
     yield put({
       type: 'LOG_OUT_SUCCESS',
-      data: result.data,
+      //   data: result.data,
     });
   } catch (err) {
     yield put({
@@ -65,7 +64,7 @@ function* addPost(action) {
     yield delay(1000); // 서버가 없을 땐 delay로 비동기 적인 효과를 주면서 테스트
     yield put({
       type: 'ADD_POST_SUCCESS',
-      data: result.data,
+      //   data: result.data,
     });
   } catch (err) {
     yield put({
