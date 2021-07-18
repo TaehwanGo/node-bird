@@ -1371,6 +1371,43 @@ generator.next(); // {value: 0, done: false}, {value: 1, done: false}, ...
 
 ### 3-3. saga 이펙트 알아보기
 
+saga 이펙트
+
+- all, fork, call, take, put, delay, debounce, throttle, takeLatest, ...
+  - all([]) : 배열을 받아서 배열안에 있는 것들을 한번에 실행
+  - fork : (제너레이터)함수를 실행하는 것
+  - call : (제너레이터)함수를 실행하는 데 fork랑 다름
+  - take : `take('LOG_IN', logIn);` : LOG_IN 이란 action이 실행될 때 까지 기다리겠다는 뜻
+  - put : action객체를 dispatch 하는 것
+  - call vs fork 차이?
+    - fork는 비동기 함수 호출, call은 동기 함수 호출
+    - fork는 실행하고 기다리지 않고 바로 넘어감(non blocking)
+    - call은 await 붙은 것 처럼 기다려줌
+      - call(loginAPI, action.data); == await loginAPI(action.data)
+      - call(첫번째 자리 : 함수, 그 다음부터 : 매개변수들)
+
+rootSaga를 만들어 놓고 그 안에 비동기 액션들을 하나씩 넣어줌
+
+npm i axios
+
+```javascript
+function* watchLogin() {
+  // 비동기 action 크리에이터
+  yield take('LOG_IN', login);
+}
+// 'LOG_IN' action이 들어오면
+// login 제너레이터 함수를 실행 (take 이펙트에 의해)
+```
+
+thunk에선 비동기 action크리에이터를 직접 실행했지만
+saga에선 이벤트리스너 같은 역할을 함
+
+- take가 이벤트 리스너 같은 느낌
+
+saga는 async await을 사용하는 것에 비해 테스트 할때 정말 좋음
+
+### 3-4. take, take 시리즈, throttle 알아보기
+
 <br />
 <br />
 <br />
