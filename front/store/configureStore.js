@@ -1,8 +1,9 @@
 import { createWrapper } from 'next-redux-wrapper';
 import { applyMiddleware, compose, createStore } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
-import thunkMiddleware from 'redux-thunk';
 import reducer from '../reducers';
+import createSagaMiddleware from 'redux-saga';
+import rootSaga from '../sagas';
 
 // action이 dispatch 되는 것을 logging하는 미들웨어
 const loggerMiddleware =
@@ -18,12 +19,14 @@ const loggerMiddleware =
   };
 
 const configureStore = () => {
-  const middlewares = [thunkMiddleware, loggerMiddleware];
+  const sagaMiddleware = createSagaMiddleware();
+  const middlewares = [sagaMiddleware, loggerMiddleware];
   const enhancer =
     process.env.NODE_ENV === 'production'
       ? compose(applyMiddleware(...middlewares))
       : composeWithDevTools(applyMiddleware(...middlewares));
   const store = createStore(reducer, enhancer);
+  store.sagaTask = sagaMiddleware.run(rootSaga);
   return store;
 };
 

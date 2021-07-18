@@ -1328,6 +1328,49 @@ thunk를 안쓰고 saga를 쓰는 이유
 
 ### 3-2. saga 설치하고 generator 이해하기
 
+npm rm redux-thunk : thunk 지워버림
+
+npm i redux-saga : saga 설치
+
+rootSaga : rootReducer 처럼 작성하는게 있음
+
+제너레이터 함수
+
+- function\*
+
+```javascript
+const gen = function* () {
+  console.log(1);
+  yield; // 일드
+  console.log(2);
+  yield;
+  console.log(4);
+  yield 4;
+};
+const generator = gen(); //gen() 만 실행하는게 아니라
+gen.next(); //.next() 를 붙여야 실행 됨
+// 중단점(yield) 있는 함수
+```
+
+```javascript
+let i = 0;
+const gen = function* () {
+  while (true) {
+    yield i++;
+  }
+};
+// 무한 반복되는게 아니라 매번 중단점에서 중단 됨
+const generator = gen();
+generator.next(); // {value: 0, done: false}, {value: 1, done: false}, ...
+// done이 true로 변하지 않음
+```
+
+무한 반복 제너레이터가 이벤트 리스너랑 비슷하게도 사용가능
+
+- saga도 그런 것을 만들어 낸 것임
+
+### 3-3. saga 이펙트 알아보기
+
 <br />
 <br />
 <br />
