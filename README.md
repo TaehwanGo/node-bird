@@ -1083,7 +1083,10 @@ rol="presentation" 을 입력하면 시작장애인들이 스크린리더로 볼
 ImagesZoom은 ImagesZoom.js를 바로 만들지 않고 폴더를 만들고 index.js를 만드는 이유
 
 - 컴포넌트가 복잡해지면 바로 파일을 만드는게 아니라 폴더를 만들고 index.js를 넣는 경우가 많아짐
-  - why?
+- (2-11 8:50에서 설명) styled component가 많아져서 지저분한게 많아서 그걸 다 없애고 styles.js로 나눈 후 export
+  - 나중에 재사용도 가능
+- 폴더 안에 폴더가 있는 구조가 될 수도 있음
+- 100줄 안쪽의 코드를 유지하기 위해(기준은 달라질 수 있음)
 
 npm i react-slick
 
@@ -1154,6 +1157,52 @@ const Header = styled.header`
 - [react-slick docs/api](https://react-slick.neostack.com/docs/api)
 
 ### 2-11. 글로벌 스타일과 컴포넌트 폴더 구조
+
+현재 슬라이드가 작동안하는 이유
+
+- slick의 클래스네임(css)가 정해져 있음
+  - 돌려놔야 됨
+  - styled-component의 createGlobalStyle``을 사용해서 덮어 씌움
+  - 덮어씌우려고 만든 `<Global />` 컴포넌트는 아무데나 넣으면 됨
+
+css에서 나중에 적용된 값이 적용되지 않게 하려면
+`!important`를 붙임
+
+```css
+p {
+  color: red !important;
+}
+p {
+  color: blue;
+}
+```
+
+화면 하단 가로 스크롤 이슈(antd gutter)
+
+```javascript
+const Global = createGlobalStyle`
+  .ant-row {
+    margin-right: 0 !important;
+    margin-left: 0 !important;
+  }
+
+  .ant-col:first-chiled {
+    padding-left: 0 !important;
+  }
+
+  .ant-col:last-child {
+    padding-right: 0 !important;
+  }
+`;
+```
+
+큰 것 부터 만들고 작은 것을 구현
+
+- Home 화면(pages/index.js)에서 PostForm, PostCard 이렇게 크게 나누고 나머지를 세세하게 구현
+
+내가 만들어본 코드들은 자산이다. 잘 정리해두자(github)
+
+### 2-12. 게시글 해시태그 링크로 만들기
 
 <br />
 <br />
