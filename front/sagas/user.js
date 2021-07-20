@@ -1,5 +1,16 @@
-// import axios from 'axios';
+import axios from 'axios';
 import { all, delay, fork, put, takeLatest } from 'redux-saga/effects';
+import {
+  LOG_IN_FAILURE,
+  LOG_IN_REQUEST,
+  LOG_IN_SUCCESS,
+  LOG_OUT_FAILURE,
+  LOG_OUT_REQUEST,
+  LOG_OUT_SUCCESS,
+  SIGN_UP_REQUEST,
+  SIGN_UP_SUCCESS,
+  SIGN_UP_FAILURE,
+} from '../reducers/user';
 
 // 로그인
 // function loginAPI(data) {
@@ -14,34 +25,55 @@ function* login(action) {
     // const result = yield call(loginAPI, action.data);
     yield delay(1000); // 서버가 없을 땐 delay로 비동기 적인 효과를 주면서 테스트
     yield put({
-      type: 'LOG_IN_SUCCESS',
+      type: LOG_IN_SUCCESS,
       data: action.data, // 일단 서버연결 전까지 login request에서 보낸 것을 바로 success로 보냄
       //   data: result.data,
     });
   } catch (err) {
     yield put({
-      type: 'LOG_IN_FAILURE',
-      data: err.response.data,
+      type: LOG_IN_FAILURE,
+      error: err.response.data,
     });
   }
 }
 
 // 로그아웃
-// function logoutAPI() {
-//   return axios.post('/api/logout');
-// }
+function logoutAPI() {
+  return axios.post('/api/logout');
+}
 
 function* logout() {
   try {
     // const result = yield call(logoutAPI);
     yield delay(1000); // 서버가 없을 땐 delay로 비동기 적인 효과를 주면서 테스트
     yield put({
-      type: 'LOG_OUT_SUCCESS',
+      type: LOG_OUT_SUCCESS,
       //   data: result.data,
     });
   } catch (err) {
     yield put({
-      type: 'LOG_OUT_FAILURE',
+      type: LOG_OUT_FAILURE,
+      data: err.response.data,
+    });
+  }
+}
+
+// SignUp
+function signUpAPI() {
+  return axios.post('/api/signUp');
+}
+
+function* signUp() {
+  try {
+    // const result = yield call(logoutAPI);
+    yield delay(1000); // 서버가 없을 땐 delay로 비동기 적인 효과를 주면서 테스트
+    yield put({
+      type: SIGN_UP_SUCCESS,
+      //   data: result.data,
+    });
+  } catch (err) {
+    yield put({
+      type: SIGN_UP_FAILURE,
       data: err.response.data,
     });
   }
@@ -50,13 +82,17 @@ function* logout() {
 function* watchLogin() {
   // 비동기 action 크리에이터
   console.log('watch login');
-  yield takeLatest('LOG_IN_REQUEST', login); // login이 매개변수를 포함해서 실행하는 것
+  yield takeLatest(LOG_IN_REQUEST, login); // login이 매개변수를 포함해서 실행하는 것
 }
 
 function* watchLogout() {
-  yield takeLatest('LOG_OUT_REQUEST', logout);
+  yield takeLatest(LOG_OUT_REQUEST, logout);
+}
+
+function* watchSignUp() {
+  yield takeLatest(SIGN_UP_REQUEST, signUp);
 }
 
 export default function* userSaga() {
-  yield all([fork(watchLogin), fork(watchLogout)]);
+  yield all([fork(watchLogin), fork(watchLogout), fork(watchSignUp)]);
 }

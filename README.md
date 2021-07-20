@@ -1492,6 +1492,8 @@ function* watchLogin() {
 
 ### 3-6. 액션과 상태 정리하기
 
+action들 추가
+
 <br />
 <br />
 <br />
