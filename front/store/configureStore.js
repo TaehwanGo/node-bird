@@ -1,8 +1,8 @@
 import { createWrapper } from 'next-redux-wrapper';
 import { applyMiddleware, compose, createStore } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
-import reducer from '../reducers';
 import createSagaMiddleware from 'redux-saga';
+import reducer from '../reducers';
 import rootSaga from '../sagas';
 
 const configureStore = context => {

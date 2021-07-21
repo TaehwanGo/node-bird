@@ -2,11 +2,10 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import Link from 'next/link';
 import { Menu, Input, Row, Col, Switch } from 'antd';
-import styled from 'styled-components';
+import styled, { createGlobalStyle } from 'styled-components';
+import { useSelector } from 'react-redux';
 import UserProfile from './UserProfile';
 import LoginForm from './LoginForm';
-import { useSelector } from 'react-redux';
-import { createGlobalStyle } from 'styled-components';
 
 const Global = createGlobalStyle`
   .ant-row {
@@ -28,7 +27,7 @@ const SearchInput = styled(Input.Search)`
 `;
 
 const AppLayout = ({ children }) => {
-  const isLoggedIn = useSelector(state => state.user.isLoggedIn); // isLoggedIn이 바뀌면 알아서 re-rendering 됨
+  const { me } = useSelector(state => state.user); // isLoggedIn이 바뀌면 알아서 re-rendering 됨
 
   // 좋아 나중에 리덕스로 다크모드 관리해보자
   const [theme, setTheme] = useState('light');
@@ -81,7 +80,7 @@ const AppLayout = ({ children }) => {
 
       <Row gutter={8}>
         <Col xs={24} md={6}>
-          {isLoggedIn ? <UserProfile /> : <LoginForm />}
+          {me ? <UserProfile /> : <LoginForm />}
         </Col>
         <Col xs={24} md={12}>
           {children}

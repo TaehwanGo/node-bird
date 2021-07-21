@@ -1494,6 +1494,50 @@ function* watchLogin() {
 
 action들 추가
 
+### 3-7. 바뀐 상태 적용하고 eslint 점검하기
+
+antd 의 Input에서 type="email" 이면 알아서 검사 되는지 확인
+
+- 아니면 default로 input tag가 html5에서 이메일 검사기능이 되는건지 확인
+
+PostForm.js에서 const imageInput = useRef(); 왜 썼는지 파악하기
+
+npm i -D babel-eslint eslint-config-airbnb eslint-plugin-import
+npm i -D eslint-plugin-react-hooks
+babel-eslint가 deprecated 돼서 @babel/eslint-parser로 설치 함
+@babel/core랑 같이 받으라고 공식문서에 나와있어서 받음
+// 위는 자바스크립트 노멀 세팅, babel 세팅도 따로 해줘야 함
+// 그냥 강의와 같이 babel-eslint 쓰는게 편할 듯 - babel 세팅을 따로 안해줘도 되니
+
+next 11버전부턴 eslint를 next에서 제공
+npm install --save-dev eslint-config-next
+npm run lint : "lint" : "next lint"
+// 이건 jest로 테스트 하는 것 처럼 eslint에 맞는지 파일들을 검사하는 기능임
+// 어차피 .eslintrc에서 설정은 본인이 해야 함
+
+airbnb로 설정하니 js파일에 jsx를 못 쓴다고 나옴
+npm i -D eslint-plugin-jsx-a11y
+// a11y : 접근성, accessibility
+
+// eslint, prettier 충돌
+npm i -D eslint-config-prettier
+
+```json
+{
+  "extends": ["airbnb", "prettier"]
+}
+```
+
+eslint의 airbnb에서 react를 사용하는 js파일을 허용하지 않을 때
+
+```json
+"rules": {
+  "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
+}
+```
+
+### 3-8. 게시글, 댓글 saga 작성하기
+
 <br />
 <br />
 <br />

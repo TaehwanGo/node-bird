@@ -42,20 +42,16 @@ const dummyUser = data => ({
   Followers: [],
 });
 
-export const loginRequestAction = data => {
-  return {
-    type: LOG_IN_REQUEST,
-    data,
-  };
-};
+export const loginRequestAction = data => ({
+  type: LOG_IN_REQUEST,
+  data,
+});
 
 // SUCCESS, FAILURE action이 필요없는 이유 : saga가 알아서 호출 : put으로
 
-export const logoutRequestAction = () => {
-  return {
-    type: LOG_OUT_REQUEST,
-  };
-};
+export const logoutRequestAction = () => ({
+  type: LOG_OUT_REQUEST,
+});
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
