@@ -1538,6 +1538,132 @@ eslint의 airbnb에서 react를 사용하는 js파일을 허용하지 않을 때
 
 ### 3-8. 게시글, 댓글 saga 작성하기
 
+// immer, faker
+// 화면에 문제가 생기면 데이터를 먼저 보자
+
+#### warning : Encountered two children 'react_devtools_backend.js:6' with the same key, '2'
+
+- 반복문 안에서 dummyPost가 id가 같아서 react가 구분을 못 함
+- 반복삭제가 계속 일어나서 key를 인덱스로 쓰기도 어려운 상황
+- react key id값으로 뭘쓸지 애매할때 : npm i shortid
+
+#### shortId 라이브러리
+
+#### faker : 각종 더미데이터들을 제공
+
+- 사람 닉네임, 게시글 컨텐츠들에 대한 각종 더미데이터를 자동으로 생성해서 제공
+
+#### 게시글 등록 흐름
+
+로그인이 되면 index.js의 조건에 의해 PostForm이 보여짐
+PostForm에 게시글이 입력되고 - onChangeText -> useState : text
+제출을 누르면 (onSubmit) dispatch(addPost(text))
+
+- addPost(text) : 동적 액션 크리에이터 : 1초뒤 ADD_POST_SUCCESS 액션을 redux-saga의 put method에 넣어서
+- dispatch(addPost(text)) : addPost의 결과를 reducer로 전달
+
+// 현재 강의와 다른 내 문제점 : 현재 댓글 게시글 등록시 본문이 안보임(반영이 안됨), 빈 창이 하나 추가됨
+
+- onChangeText에서 onSubmit할 때 dispatch를 감싸는 useCallback의 dependency에 text를 추가안했음(업데이트 되지 않은 자료가 전달됨) : 문제 해결
+
+```javascript
+// post.js
+const onSubmit = useCallback(() => {
+  dispatch(addPost(text));
+}, [text]);
+```
+
+#### comment 등록 흐름
+
+- 댓글입력(commentText : state)
+- 제출(onSubmitComment) : 게시글(post)에 commentText, post.id, userId 전달 됨(ADD_COMMENT_REQUEST 액션이 dispatch에 의해 전달)
+  - 게시글(post) : props로 받음
+  - userId : reducer에서 가져옴(useSelect)
+  - 댓글(commentText) : state
+
+```javascript
+const onSubmitComment = useCallback(() => {
+  console.log(post.id, commentText);
+  dispatch({
+    type: ADD_COMMENT_REQUEST,
+    data: { content: commentText, postId: post.id, userId: id },
+  });
+}, [commentText, id]);
+```
+
+- dispatch된 것을 saga가 받음(sagas/post.js)
+
+```javascript
+function* watchAddComment() {
+  yield takeLatest(ADD_COMMENT_REQUEST, addComment); // 3초안의 같은 요청은 무시
+}
+
+function* addComment(action) {
+  try {
+    yield delay(1000);
+    yield put({
+      type: ADD_COMMENT_SUCCESS,
+      data: action.data,
+    });
+  } catch (err) {
+    yield put({
+      type: ADD_COMMENT_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+```
+
+- saga의 put(action객체를 dispatch 하는 saga 이펙트)에 의해 reducer/post.js의 ADD_COMMENT_SUCCESS에 해당하는 case문이 실행 됨
+
+```javascript
+const reducer = (state = initialState, action) => {
+  // ...
+  switch (action.type) {
+    // ...
+    case ADD_COMMENT_SUCCESS: {
+      // action.data.content, postId, userId 를 받음
+      // 불변성을 지키기 위한 코드 : 바뀌는 것만 새로운 객체로 만들고 나머지 객체는 참조를 유지해줘야 함
+      const postIndex = state.mainPosts.findIndex(
+        v => v.id === action.data.postId,
+      );
+      const post = { ...state.mainPosts[postIndex] };
+      post.Comments = [dummyComment(action.data.content), ...post.Comments];
+      const mainPosts = [...state.mainPosts];
+      mainPosts[postIndex] = post;
+      return {
+        ...state,
+        mainPosts,
+        addCommentLoading: false,
+        addCommentDone: true,
+      };
+    }
+    // ...
+    default:
+      return state;
+  }
+};
+```
+
+- ADD_COMMENT_SUCCESS에 해당하는 case문에 의해 reducer가 state를 추가 할 때(state = initialState)
+
+  - mainPosts에서 id를 찾고 그 안에 Comment를 찾아야 함
+
+- 화면에 다시 반영되면서 useEffect()실행 addCommentDone이 true가 되면 댓글창을 비워줌(setCommentText('');)
+
+```javascript
+// CommentForm.js
+useEffect(() => {
+  if (addCommentDone) {
+    setCommentText('');
+  }
+}, [addCommentDone]);
+```
+
+#### no-case-declaration
+
+case문에 {} block을 씌우라는 뜻
+
 <br />
 <br />
 <br />

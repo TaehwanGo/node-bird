@@ -1,3 +1,5 @@
+import shortId from 'shortid';
+
 export const initialState = {
   mainPosts: [
     {
@@ -38,6 +40,9 @@ export const initialState = {
   addPostLoading: false,
   addPostDone: false,
   addPostError: null,
+  addCommentLoading: false,
+  addCommentDone: false,
+  addCommentError: null,
 };
 
 export const ADD_POST_REQUEST = 'ADD_POST_REQUEST'; // 상수로 만들면 switch문에서 case에서 재사용 가능, 오타방지
@@ -60,16 +65,25 @@ export const addComment = data => ({
   data,
 });
 
-const dummyPost = {
-  id: 2,
-  content: '더미데이터입니다.',
+const dummyPost = data => ({
+  id: shortId.generate(),
+  content: data,
   User: {
     id: 1,
     nickname: 'tony',
   },
   Images: [],
   Comments: [],
-};
+});
+
+const dummyComment = data => ({
+  id: shortId.generate(),
+  content: data,
+  User: {
+    id: 1,
+    nickname: 'tony',
+  },
+});
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
@@ -81,9 +95,10 @@ const reducer = (state = initialState, action) => {
         addPostError: null,
       };
     case ADD_POST_SUCCESS:
+      console.log('ADD_POST_SUCCESS', action.data);
       return {
         ...state,
-        mainPosts: [dummyPost, ...state.mainPosts], // 앞에 추가해야 위로 올라감
+        mainPosts: [dummyPost(action.data), ...state.mainPosts], // 앞에 추가해야 위로 올라감
         addPostLoading: false,
         addPostDone: true,
       };
@@ -100,12 +115,24 @@ const reducer = (state = initialState, action) => {
         addCommentDone: false,
         addCommentError: null,
       };
-    case ADD_COMMENT_SUCCESS:
+    case ADD_COMMENT_SUCCESS: {
+      // action.data.content, postId, userId 를 받음
+      // 불변성을 지키기 위한 코드 : 바뀌는 것만 새로운 객체로 만들고 나머지 객체는 참조를 유지해줘야 함
+      // 불변성을 편하게 할 수 있는 라이브러리 : 이머
+      const postIndex = state.mainPosts.findIndex(
+        v => v.id === action.data.postId,
+      );
+      const post = { ...state.mainPosts[postIndex] };
+      post.Comments = [dummyComment(action.data.content), ...post.Comments];
+      const mainPosts = [...state.mainPosts];
+      mainPosts[postIndex] = post;
       return {
         ...state,
+        mainPosts,
         addCommentLoading: false,
         addCommentDone: true,
       };
+    }
     case ADD_COMMENT_FAILURE:
       return {
         ...state,

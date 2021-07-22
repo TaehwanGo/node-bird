@@ -8,7 +8,9 @@ import { ADD_COMMENT_REQUEST } from '../reducers/post';
 const CommentForm = ({ post }) => {
   const dispatch = useDispatch();
   const id = useSelector(state => state.user.me?.id);
-  const { addCommentDone } = useSelector(state => state.post);
+  const { addCommentDone, addCommentLoading } = useSelector(
+    state => state.post,
+  );
   const [commentText, onChangeCommentText, setCommentText] = useInput('');
 
   useEffect(() => {
@@ -43,6 +45,7 @@ const CommentForm = ({ post }) => {
           }}
           type="primary"
           htmlType="submit"
+          loading={addCommentLoading}
         >
           응애
         </Button>
