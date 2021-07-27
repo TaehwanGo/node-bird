@@ -1664,6 +1664,88 @@ useEffect(() => {
 
 case문에 {} block을 씌우라는 뜻
 
+### 3-9. 게시글 삭제 saga 작성하기
+
+data(state)는 reducer 파일안에 있음
+게시글 : post reducer : ADD_POST_SUCCESS
+
+게시글 삭제는 어떻게 진행 될까?
+post reducer에선 post reducer 데이터만 건들 수 있고
+user reducer에선 user reducer 데이터만 건들 수 있음
+상태를 바꾸고 싶으면 action을 통해 바꿔주면 된다
+
+saga는 여러 action을 동시에 dispatch할 수 있기 때문에 어떤 action, 동작이 여러 reducer의 data를 동시에 바꿔야 한다면 action을 여러번 호출해 주면 됨
+
+리덕스에서 불변성을 지키면서 게시글을 지우는 방법
+
+- array.filter 이용
+
+```javascript
+case REMOVE_POST_OF_ME:
+  return {
+    ...state,
+    me: {
+      ...state.me,
+      Posts: state.me.filter((v) => v.id === action.data)
+    }
+  }
+```
+
+post reducer 상태(state) 와 user reducer 상태(state)를 동시에 바꿀 수 없기 때문에
+동시에 한번에 바꿔준다(saga에서)
+
+```javascript
+function* removePost(action) {
+  try {
+    // const result = yield call(addPostAPI, action.data); // action에서 data꺼내서 addPostAPI로 들어감
+    yield delay(1000); // 서버가 없을 땐 delay로 비동기 적인 효과를 주면서 테스트
+    const id = shortid.generate();
+    yield put({
+      // post reducer 조작부분
+      type: REMOVE_POST_SUCCESS,
+      data: {
+        id,
+        content: action.data,
+      },
+    });
+    yield put({
+      // user reducer 조작부분
+      type: REMOVE_POST_OF_ME,
+      data: id,
+    });
+  } catch (err) {
+    yield put({
+      type: REMOVE_POST_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+```
+
+사용자 id : user reducer state의 me에 들어있음
+
+remove post request를 누가 받음? saga
+
+게시글 삭제 시 삭제하려는 게시글이 아닌 나머지가 삭제되는 버그
+
+- 데브툴즈로 어디서 실수 했는지 확인
+
+```javascript
+case REMOVE_POST_SUCCESS:
+      // console.log('ADD_POST_SUCCESS', action.data);
+      return {
+        ...state,
+        mainPosts: state.mainPosts.filter(v => v.id !== action.data), // !== 이어야 되는데 === 이었음
+        removePostLoading: false,
+        removePostDone: true,
+      };
+```
+
+// 현재 안되는 점
+
+- 게시글 삭제 후 로그아웃 버튼 아래 게시글 표시 수 업데이트 안됨
+- 게시글 삭제 후 게시글 생성이 안됨
+
 <br />
 <br />
 <br />
