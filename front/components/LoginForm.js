@@ -21,7 +21,6 @@ const LoginForm = () => {
   const [password, onChangePassword] = useInput('');
 
   const onSubmitForm = useCallback(() => {
-    console.log(email, password);
     dispatch(loginRequestAction({ email, password })); // setIsLoggedIn(true);
   }, [email, password]); // state는 dependency에 넣어줘야 최신 상태로 가져올 수 있음
 

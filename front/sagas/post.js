@@ -21,7 +21,6 @@ function addPostAPI(data) {
 
 function* addPost(action) {
   try {
-    console.log('addPost(action) in saga', action);
     // const result = yield call(addPostAPI, action.data); // action에서 data꺼내서 addPostAPI로 들어감
     yield delay(1000); // 서버가 없을 땐 delay로 비동기 적인 효과를 주면서 테스트
     const id = shortid.generate();

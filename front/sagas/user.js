@@ -20,7 +20,6 @@ import {
 
 function* login(action) {
   try {
-    console.log('login gen');
     // call(loginAPI, action.data, a, b, c) == await loginAPI(action.data, a, b, c)
     // const result = yield call(loginAPI, action.data);
     yield delay(1000); // 서버가 없을 땐 delay로 비동기 적인 효과를 주면서 테스트

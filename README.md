@@ -1761,6 +1761,104 @@ state.me.Posts.filter(v => v.id !== action.data),
 
 ### 3-10. immer 도입하기
 
+문제점 : 현재 reducer에서 불변성을 지키기 위해 복잡하게 코딩이 되어 있음
+
+```javascript
+case ADD_COMMENT_SUCCESS: {
+      // action.data.content, postId, userId 를 받음
+      // 불변성을 지키기 위한 코드 : 바뀌는 것만 새로운 객체로 만들고 나머지 객체는 참조를 유지해줘야 함
+      // 불변성을 편하게 할 수 있는 라이브러리 : 이머
+      const postIndex = state.mainPosts.findIndex(
+        v => v.id === action.data.postId,
+      );
+      const post = { ...state.mainPosts[postIndex] };
+      post.Comments = [dummyComment(action.data.content), ...post.Comments];
+      const mainPosts = [...state.mainPosts];
+      mainPosts[postIndex] = post;
+      return {
+        ...state,
+        mainPosts,
+        addCommentLoading: false,
+        addCommentDone: true,
+      };
+    }
+```
+
+위 코드는 자칫 오타로 인한 에러발생 확률이 높음
+
+npm i immer
+
+redux 뿐만 아니라 react의 useState나 setState의 불변성을 지킬 때도 사용가능
+
+```javascript
+import produce from 'immer'; // produce라는 이름으로 주로 사용
+
+const reducer = (state = initialState, action) => {
+  return produce(state, draft => {
+    // 기존 switch문을 immer(produce) 안으로 가져오고
+    // state 대신 draft를 사용
+    switch (action.type) {
+      case ADD_POST_REQUEST:
+        draft.addPostLoading = true;
+        draft.addPostDone = false;
+        draft.addPostError = null;
+        break;
+      // ...
+      default:
+        break;
+    }
+  });
+};
+
+export default reducer;
+```
+
+eslint rule 중 "no-param-reassign" : "off" // immer 코드 짜는 방식
+
+```javascript
+// immer 적용 전 후 비교
+// 적용 전
+      case ADD_COMMENT_SUCCESS: {
+        // action.data.content, postId, userId 를 받음
+        // 불변성을 지키기 위한 코드 : 바뀌는 것만 새로운 객체로 만들고 나머지 객체는 참조를 유지해줘야 함
+        // 불변성을 편하게 할 수 있는 라이브러리 : 이머
+        const postIndex = state.mainPosts.findIndex(
+          v => v.id === action.data.postId,
+        );
+        const post = { ...state.mainPosts[postIndex] };
+        post.Comments = [dummyComment(action.data.content), ...post.Comments];
+        const mainPosts = [...state.mainPosts];
+        mainPosts[postIndex] = post;
+        return {
+          ...state,
+          mainPosts,
+          addCommentLoading: false,
+          addCommentDone: true,
+        };
+      }
+// immer 적용 후
+      case ADD_COMMENT_SUCCESS: { // 이 부분 때문에 immer를 썻다고 해도 과언이 아님
+        const post = draft.mainPost.find((v) => v.id === action.data.postId);
+        post.Comments.unshift(dummyComment(action.data.content));
+        draft.addCommentLoading = false;
+        draft.addCommentDone = true;
+        break;
+      }
+```
+
+reducer post와 user 둘다 immer 적용해서 switch문 안에서 불변성 지켰던 코드 불변성 신경안쓰는 코드로 변환
+
+immer, faker, shortId, swr 라이브러리는 redux에서 개꿀이니 꼭 배워서 쓰자
+
+- redux는 코드량이 많기 때문에 코드를 줄일 수 있는 방법연구하는게 좋음
+  - redux toolkit
+
+```javascript
+case REMOVE_POST_OF_ME:
+draft.me.Posts = draft.me.Posts.filter(v => v.id !== action.data); // 원래 immer에선 unshift가 맞음, 그런데 두줄이 되니 성능문제 생기기 전까진 filter로 진행
+break;
+```
+
 <br />
 <br />
 <br />
