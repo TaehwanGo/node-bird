@@ -1746,6 +1746,21 @@ case REMOVE_POST_SUCCESS:
 - 게시글 삭제 후 로그아웃 버튼 아래 게시글 표시 수 업데이트 안됨
 - 게시글 삭제 후 게시글 생성이 안됨
 
+user reducer와 post reducer 각각의 initial state가 다름
+
+```javascript
+// 수정 전
+state.me.filter(v => v.id === action.data),
+
+// 삽질 : post reducer의 state와 user reducer의 state가 같은줄 알았음
+state.mainPosts.filter(v => v.id !== action.data),
+
+// 수정 후 : 문제 해결
+state.me.Posts.filter(v => v.id !== action.data),
+```
+
+### 3-10. immer 도입하기
+
 <br />
 <br />
 <br />

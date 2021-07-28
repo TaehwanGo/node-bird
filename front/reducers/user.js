@@ -166,7 +166,7 @@ const reducer = (state = initialState, action) => {
         ...state,
         me: {
           ...state.me,
-          Posts: state.me.filter(v => v.id === action.data),
+          Posts: state.me.Posts.filter(v => v.id !== action.data),
         },
       };
     default:
