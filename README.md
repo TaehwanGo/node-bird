@@ -1859,6 +1859,72 @@ draft.me.Posts = draft.me.Posts.filter(v => v.id !== action.data); // 원래 imm
 break;
 ```
 
+### 3-11. faker로 실감나는 더미데이터 만들기
+
+#### 더미 데이터의 멋을 살려줄 라이브러리
+
+npm i faker
+
+shortId와 faker로 게시글을 많이 만들어 보자
+
+#### array.concat();
+
+```javascript
+const array1 = ['a', 'b', 'c'];
+const array2 = ['d', 'e', 'f'];
+const array3 = array1.concat(array2);
+
+console.log(array3);
+// expected output: Array ["a", "b", "c", "d", "e", "f"]
+
+// 출처 : MDN
+```
+
+더미 이미지 : placehoder.com
+
+더미 데이터 : 스크롤링 할 때도 필요함
+
+#### 로그인 안했을 때 프로필 못 가게
+
+pages/profile.js
+
+```javascript
+import Router from 'next/router';
+const Profile = () => {
+  const { me } = useSelector(state => state.user);
+
+  useEffect(() => {
+    // redirect 까지
+    if (!me?.id) {
+      Router.push('/');
+    }
+  }, [me?.id]);
+
+  if (!me) {
+    // 로그인 안했을 때 프로필 못 가게
+    return null;
+  }
+
+  return (
+    <>
+      <Head>
+        <title>내 프로필 | NodeBird</title>
+      </Head>
+      <AppLayout>
+        <NicknameEditForm />
+        <FollowList header="팔로잉" data={me.Followings} />
+        <FollowList header="팔로워" data={me.Followers} />
+      </AppLayout>
+    </>
+  );
+};
+```
+
+#### redux-toolkit : later...
+
+리덕스와 리액트를 같이 쓸때 template 같은 놈임
+리덕스 공식팀에서 긴 코드를 간단하게 하기위해 만든 녀석
+
 <br />
 <br />
 <br />

@@ -1,12 +1,23 @@
-import React from 'react'; // next에선 안해도 됨(해도 상관은 없음)
+import React, { useEffect } from 'react'; // next에선 안해도 됨(해도 상관은 없음)
 import Head from 'next/head';
 import { useSelector } from 'react-redux';
+import Router from 'next/router';
 import AppLayout from '../components/AppLayout';
 import NicknameEditForm from '../components/NicknameEditForm';
 import FollowList from '../components/FollowList';
 
 const Profile = () => {
   const { me } = useSelector(state => state.user);
+
+  useEffect(() => {
+    if (!me?.id) {
+      Router.push('/');
+    }
+  }, [me?.id]);
+
+  if (!me) {
+    return null;
+  }
 
   return (
     <>
