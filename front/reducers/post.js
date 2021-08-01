@@ -3,49 +3,12 @@ import produce from 'immer';
 import faker from 'faker';
 
 export const initialState = {
-  mainPosts: [
-    {
-      id: 1,
-      User: {
-        id: 1,
-        nickname: 'tony',
-      },
-      content: '첫 번째 게시글 #헤시태그 #익스프레스',
-      Images: [
-        {
-          id: shortId.generate(),
-          src: 'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg',
-        },
-        {
-          id: shortId.generate(),
-          src: 'https://www.industrialempathy.com/img/remote/ZiClJf-1920w.jpg',
-        },
-        {
-          id: shortId.generate(),
-          src: 'https://media.vlpt.us/images/jongbeen_song/post/174477f5-01a8-4e7a-94c8-4801e36dbb06/111111111.png',
-        },
-      ],
-      Comments: [
-        {
-          id: shortId.generate(),
-          User: {
-            id: shortId.generate(),
-            nickname: 'taehwan',
-          },
-          content: 'free to focus',
-        },
-        {
-          id: shortId.generate(),
-          User: {
-            id: shortId.generate(),
-            nickname: 'noah',
-          },
-          content: 'let us get it',
-        },
-      ],
-    },
-  ],
+  mainPosts: [],
   imagePaths: [],
+  hasMorePost: true, // false이면 데이터를 더이상 가져오려는 시도를 하지 않게 함(이미 끝까지 다 가져온 경우)
+  loadPostsLoading: false,
+  loadPostsDone: false,
+  loadPostsError: null,
   addPostLoading: false,
   addPostDone: false,
   addPostError: null,
@@ -57,8 +20,8 @@ export const initialState = {
   addCommentError: null,
 };
 
-initialState.mainPosts = initialState.mainPosts.concat(
-  Array(20)
+export const generateDummyPost = number =>
+  Array(number)
     .fill()
     .map(() => ({
       id: shortId.generate(),
@@ -82,8 +45,11 @@ initialState.mainPosts = initialState.mainPosts.concat(
           content: faker.lorem.sentence(),
         },
       ],
-    })),
-);
+    }));
+
+export const LOAD_POSTS_REQUEST = 'LOAD_POSTS_REQUEST'; // 화면 로드 시 호출
+export const LOAD_POSTS_SUCCESS = 'LOAD_POSTS_SUCCESS';
+export const LOAD_POSTS_FAILURE = 'LOAD_POSTS_FAILURE';
 
 export const ADD_POST_REQUEST = 'ADD_POST_REQUEST'; // 상수로 만들면 switch문에서 case에서 재사용 가능, 오타방지
 export const ADD_POST_SUCCESS = 'ADD_POST_SUCCESS';
@@ -133,6 +99,21 @@ const dummyComment = data => ({
 const reducer = (state = initialState, action) =>
   produce(state, draft => {
     switch (action.type) {
+      case LOAD_POSTS_REQUEST:
+        draft.loadPostsLoading = true;
+        draft.loadPostsDone = false;
+        draft.loadPostsError = null;
+        break;
+      case LOAD_POSTS_SUCCESS:
+        draft.loadPostsLoading = false;
+        draft.loadPostsDone = true;
+        draft.mainPosts = action.data.concat(draft.mainPosts); // 기존 데이터에 데이터를 합쳐줌
+        draft.hasMorePost = draft.mainPosts.length < 50; // 50은 임의적으로 설정한 숫자, 나중에 db 총 개수를 받아와야 할 듯
+        break;
+      case LOAD_POSTS_FAILURE:
+        draft.loadPostsLoading = false;
+        draft.loadPostsError = action.error;
+        break;
       case ADD_POST_REQUEST:
         draft.addPostLoading = true;
         draft.addPostDone = false;
