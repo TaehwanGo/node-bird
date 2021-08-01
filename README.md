@@ -2004,6 +2004,12 @@ request를 한번만 보낼 수 있는 방법은 없을까
 - react-virtualized(virtualized list라는 기술을 리액트 라이브러리에 적용한 것)
   - 화면에 보여주는 것만 보여주고 나머진 메모리에 갖고 있음
 
+### 3-13. 팔로우, 언팔로우 구현하기
+
+next에선 jsx대신 js로 해도 됨
+
+PropTypes.object 대신 shape로 할 것
+
 <br />
 <br />
 <br />
