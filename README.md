@@ -1931,6 +1931,79 @@ const Profile = () => {
 
 서버로 부터 받아옴(개수는 마음대로)
 
+infinite scroll 을 front saga에서 구현
+
+- 스크롤을 내릴 때 마다 데이터를 불러옴
+
+#### reducer/post.js
+
+일단 더미데이터를 가져오는 것을 함수로 만들어서 요청한 만큼 데이터를 더 가져올 수 있게 함
+
+#### post를 가져오는 것과 관련된
+
+- action
+- reducer case
+- initialState
+  를 만들음
+
+#### load post saga 만들기
+
+#### removeEventListener를 해줘야 하는 이유
+
+```javascript
+useEffect(() => {
+  dispatch({
+    type: LOAD_POSTS_REQUEST,
+  });
+}, []); // [] 빈배열을 안넣으면 계속 호출 함
+
+useEffect(() => {
+  function onScroll() {
+    if (
+      window.scrollY + document.documentElement.clientHeight >=
+      document.documentElement.scrollHeight - 300
+    ) {
+      if (!loadPostsLoading && hasMorePost) {
+        dispatch({
+          // scroll event가 자주 일어나기 때문에 이 부분이 너무 많이 실행됨 - loading state로 막고 saga에서 throttle로 2중 장치 적용
+          type: LOAD_POSTS_REQUEST,
+        });
+      }
+    }
+  }
+  window.addEventListener('scroll', onScroll);
+
+  return () => {
+    window.removeEventListener('scroll', onScroll);
+  };
+}, [hasMorePost, loadPostsLoading]);
+```
+
+- 안그러면 메모리에 계속 쌓여 있기 때문
+
+#### 스크롤 관련 API
+
+- window.scrollY : 얼마나 내렸는지(현재 화면의 위치)
+- document.documentElement.clientHeight : 화면에 보이는 처음과 끝의 높이
+- document.documentElement.scrollHeight : 브라우저 body의 처음 부터 끝까지 총 길이
+- => window.scrollY + document.documentElement.clientHeight == document.documentElement.scrollHeight
+
+#### 스크롤 이벤트가 자주 일어나기 때문에 api 요청을 많이 하게 됨
+
+- saga의 takeLatest : request는 가지만 그것에 대한 응답을 차단함
+  - 요청은 차단을 못 함
+- saga의 throttle : 정해놓은 시간동안은 다른 request들은 무시함
+  - 정해놓은 시간동안 request를 막지만 취소하는 것은 아니기 때문에 한번더 request가 발생 됨
+
+request를 한번만 보낼 수 있는 방법은 없을까
+
+- store에 만들어놓은 loading state를 활용
+
+#### 무한으로 계속 스크롤을 하면 메모리를 계속 잡아먹음 - 모바일 브라우저에선 터질 수도 있음
+
+- react-virtualized(virtualized list라는 기술을 리액트 라이브러리에 적용한 것)
+  - 화면에 보여주는 것만 보여주고 나머진 메모리에 갖고 있음
+
 <br />
 <br />
 <br />
