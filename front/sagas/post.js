@@ -126,19 +126,19 @@ function* addComment(action) {
 }
 
 function* watchLoadPosts() {
-  yield throttle(5000, LOAD_POSTS_REQUEST, loadPosts); // 3초안의 같은 요청은 무시
+  yield throttle(5000, LOAD_POSTS_REQUEST, loadPosts); // 5초안의 같은 요청은 무시
 }
 
 function* watchAddPost() {
-  yield takeLatest(ADD_POST_REQUEST, addPost); // 3초안의 같은 요청은 무시
+  yield takeLatest(ADD_POST_REQUEST, addPost);
 }
 
 function* watchRemovePost() {
-  yield takeLatest(REMOVE_POST_REQUEST, removePost); // 3초안의 같은 요청은 무시
+  yield takeLatest(REMOVE_POST_REQUEST, removePost);
 }
 
 function* watchAddComment() {
-  yield takeLatest(ADD_COMMENT_REQUEST, addComment); // 3초안의 같은 요청은 무시
+  yield takeLatest(ADD_COMMENT_REQUEST, addComment);
 }
 
 export default function* postSaga() {

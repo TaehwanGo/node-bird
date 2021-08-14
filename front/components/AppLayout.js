@@ -26,6 +26,16 @@ const SearchInput = styled(Input.Search)`
   vertical-align: middle;
 `;
 
+const ImageFit = styled.img`
+  object-fit: cover;
+  object-position: left;
+`;
+
+const ImageWrapper = styled.div`
+  width: 100%;
+  height: 100px;
+`;
+
 const AppLayout = ({ children }) => {
   const { me } = useSelector(state => state.user); // isLoggedIn이 바뀌면 알아서 re-rendering 됨
 
