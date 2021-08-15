@@ -5,6 +5,8 @@ const cookieParser = require('cookie-parser');
 
 const postRouter = require('./routes/post');
 const userRouter = require('./routes/user');
+const formTestRouter = require('./routes/formTest');
+
 const db = require('./models'); // dir를 가져오면 자동으로 그 안의 index를 찾아서 가져옴
 const passportConfig = require('./passport');
 const passport = require('passport');
@@ -62,6 +64,7 @@ app.get('/', (req, res) => {
 
 app.use('/post', postRouter); // 중복된 요소를 뽑아 줄 수 있음
 app.use('/user', userRouter);
+app.use('/formTest', formTestRouter);
 
 app.listen(3065, () => {
   console.log('서버 실행 중');
