@@ -2,6 +2,7 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const passport = require('passport');
 const { User } = require('../models');
+const db = require('../models');
 const router = express.Router();
 
 router.post('/login', (req, res, next) => {
@@ -20,8 +21,26 @@ router.post('/login', (req, res, next) => {
         console.error('loginErr :', loginErr);
         return next(loginErr);
       }
-      console.log('전송되는 user:', user); // serialize돼서 user.id만 출력됨
-      return res.status(200).json(user);
+      // console.log('전송되는 user:', user); // serialize돼서 user.id만 출력됨
+      const fullUserWithoutPassword = await User.findOne({
+        where: { id: user.id },
+        attributes: { exclude: ['password'] },
+        include: [
+          {
+            model: db.Post,
+          },
+          {
+            model: db.User,
+            as: 'Followings',
+          },
+          {
+            model: db.User,
+            as: 'Followers',
+          },
+        ],
+      });
+      console.log('전송되는 fullUserWithoutPassword:', fullUserWithoutPassword);
+      return res.status(200).json(fullUserWithoutPassword);
     });
   })(req, res, next); // (req, res, next)를 사용하기 위해 middleware의 확장
 }); // 로그인 한 뒤 부턴 req.user에 정보가 들어있음

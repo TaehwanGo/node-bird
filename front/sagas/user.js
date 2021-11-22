@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { all, delay, fork, put, takeLatest } from 'redux-saga/effects';
+import { all, delay, fork, put, takeLatest, call } from 'redux-saga/effects';
 import {
   LOG_IN_FAILURE,
   LOG_IN_REQUEST,
@@ -19,20 +19,20 @@ import {
 } from '../reducers/user';
 
 // 로그인
-// function loginAPI(data) {
-//   // 제너레이터 아님, 실제로 서버에 요청을 보냄
-//   return axios.post('/api/login', data);
-// }
+function loginAPI(data) {
+  // 제너레이터 아님, 실제로 서버에 요청을 보냄
+  return axios.post('http://localhost:3065/user/login', data);
+}
 
 function* login(action) {
   try {
     // call(loginAPI, action.data, a, b, c) == await loginAPI(action.data, a, b, c)
-    // const result = yield call(loginAPI, action.data);
-    yield delay(1000); // 서버가 없을 땐 delay로 비동기 적인 효과를 주면서 테스트
+    const result = yield call(loginAPI, action.data);
+    // yield delay(1000); // 서버가 없을 땐 delay로 비동기 적인 효과를 주면서 테스트
     yield put({
       type: LOG_IN_SUCCESS,
-      data: action.data, // 일단 서버연결 전까지 login request에서 보낸 것을 바로 success로 보냄
-      //   data: result.data,
+      // data: action.data, // 일단 서버연결 전까지 login request에서 보낸 것을 바로 success로 보냄
+      data: result.data,
     });
   } catch (err) {
     yield put({
@@ -44,16 +44,15 @@ function* login(action) {
 
 // 로그아웃
 function logoutAPI() {
-  return axios.post('/api/logout');
+  return axios.post('/user/logout');
 }
 
 function* logout() {
   try {
-    // const result = yield call(logoutAPI);
-    yield delay(1000); // 서버가 없을 땐 delay로 비동기 적인 효과를 주면서 테스트
+    yield call(logoutAPI);
+    // yield delay(1000); // 서버가 없을 땐 delay로 비동기 적인 효과를 주면서 테스트
     yield put({
       type: LOG_OUT_SUCCESS,
-      //   data: result.data,
     });
   } catch (err) {
     yield put({

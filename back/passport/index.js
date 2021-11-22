@@ -10,7 +10,7 @@ module.exports = () => {
   });
   passport.deserializeUser(async (id, done) => {
     try {
-      await User.findOne({ where: { id } });
+      await User.findOne({ where: { id } }); // 세션에 저장된 id로 조회를 해서 user정보를 복구
       done(null, user); // cookie로 부터 받은 user id로 db에서 user를 복구해서 req.user안에 넣어줌
     } catch (error) {
       console.error(error);
