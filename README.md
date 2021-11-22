@@ -2620,7 +2620,13 @@ npm i cookie-parser
 
 - 그래서 passport가 id만 가지고 있다가 요청받을 때만 user id만 가지고 있음
 - 나중에 세션 저장용 db로 redis를 사용
-  - [ ] redis 란?
+  - [x] redis 란?
+    - REmote Dictionary Server
+    - 메모리 기반의 '키-값' 구조 데이터 관리 시스템
+    - 모든 데이터를 메모리에 저장하고 조회하기에 빠른 Read, Write 속도를 보장하는 NoSQL
+    - 참고
+      - [레디스(Redis)란 무언인가](https://jyejye9201.medium.com/%EB%A0%88%EB%94%94%EC%8A%A4-redis-%EB%9E%80-%EB%AC%B4%EC%97%87%EC%9D%B8%EA%B0%80-2b7af75fa818)
+      - https://velog.io/@gth1123/Redis
 
 npm i dotenv
 
